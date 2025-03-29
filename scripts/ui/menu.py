@@ -927,482 +927,484 @@ class ConfirmationPopup:
 		self.display_surface.blit(self.cursor_img_scaled, mouse_pos)
 
 class CharacterSelectUI:
-    def __init__(self, display_surface, on_select_callback, on_cancel_callback):
-        self.display_surface = display_surface
-        self.on_select_callback = on_select_callback  # Gọi khi nhân vật được chọn
-        self.on_cancel_callback = on_cancel_callback  # Gọi khi hủy/quay lại
-        
-        # Fonts
-        self.title_font = pygame.font.Font(f'{FONT_PATH}/Lycheesoda.ttf', 48)
-        self.header_font = pygame.font.Font(f'{FONT_PATH}/Lycheesoda.ttf', 32)
-        self.font = pygame.font.Font(f'{FONT_PATH}/Lycheesoda.ttf', 24)
-        
-        # Load danh sách nhân vật đã lưu
-        self.characters = PlayerDatabase.get_all_players()
-        self.selected_index = 0 if self.characters else -1
-        
-        # Trạng thái UI
-        self.active = True
-        self.create_new_mode = False  # Chế độ tạo nhân vật mới
-        self.name_input = ""  # Nhập tên nhân vật mới
-        self.input_active = False
-        
-        # Thành phần UI
-        self.bg_color = (20, 20, 30, 240)
-        
-        # Load hình ảnh nút
-        button_path = f'{GRAPHICS_PATH}/ui/button/'
-        self.new_btn_img = pygame.image.load(f'{button_path}new_button.png').convert_alpha()
-        self.select_btn_img = pygame.image.load(f'{button_path}select_button.png').convert_alpha() 
-        self.back_btn_img = pygame.image.load(f'{button_path}back_button.png').convert_alpha()
-        self.delete_btn_img = pygame.image.load(f'{button_path}mute_button_off.png').convert_alpha()
-        
-        # Tạo nút
-        btn_scale = 2
-        btn_y = SCREEN_HEIGHT - 100
-        
-        self.new_button = Button(SCREEN_WIDTH//4, btn_y, self.new_btn_img, btn_scale, self.toggle_creation_mode)
-        self.select_button = Button(SCREEN_WIDTH//2, btn_y, self.select_btn_img, btn_scale, self.select_character)
-        self.back_button = Button(3*SCREEN_WIDTH//4, btn_y, self.back_btn_img, btn_scale, self.on_cancel_callback)
-        
-        # Kích thước thẻ nhân vật
-        self.card_width = 600
-        self.card_height = 100
-        self.card_padding = 20
-        self.scroll_offset = 0
-        self.visible_cards = 4
-
-        self.showing_delete_confirm = False
-        self.delete_confirm_index = -1
-
-        # Thêm biến cho xem trước nhân vật
-        self.preview_character = None
-        self.avatar = []
-        
-        # Kích thước khung xem trước
-        self.preview_size = (120, 120)
-        
-    def toggle_creation_mode(self):
-        """Chuyển đổi giữa chế độ chọn và tạo nhân vật"""
-        self.create_new_mode = not self.create_new_mode
-        self.name_input = ""
-        self.input_active = self.create_new_mode
-    
-    def select_character(self):
-        """Chọn nhân vật hiện tại và quay lại game chính"""
-        if self.create_new_mode and self.name_input.strip():
-            # Tạo nhân vật mới với tên đã nhập
-            player_id = PlayerDatabase.create_player(self.name_input.strip())
-            self.on_select_callback(player_id)
-        elif self.selected_index >= 0 and self.selected_index < len(self.characters):
-            # Chọn nhân vật có sẵn
-            player_id = self.characters[self.selected_index]['player_id']
-            self.on_select_callback(player_id)
+	def __init__(self, display_surface, on_select_callback, on_cancel_callback):
+		self.display_surface = display_surface
+		self.on_select_callback = on_select_callback  # Gọi khi nhân vật được chọn
+		self.on_cancel_callback = on_cancel_callback  # Gọi khi hủy/quay lại
 		
-    def delete_character(self, index):
-        """Hiển thị hộp xác nhận trước khi xóa nhân vật"""
-        if 0 <= index < len(self.characters):
-            self.showing_delete_confirm = True
-            self.delete_confirm_index = index
-    
-    def confirm_delete(self):
-        """Xóa nhân vật sau khi xác nhận"""
-        if self.delete_confirm_index >= 0 and self.delete_confirm_index < len(self.characters):
-            player_id = self.characters[self.delete_confirm_index]['player_id']
-            PlayerDatabase.delete_player(player_id)
-            # Tải lại danh sách nhân vật sau khi xóa
-            self.characters = PlayerDatabase.get_all_players()
-            # Điều chỉnh chỉ số được chọn nếu cần
-            if self.selected_index >= len(self.characters):
-                self.selected_index = max(0, len(self.characters) - 1)
-            self.showing_delete_confirm = False
-            self.delete_confirm_index = -1
-    
-    def cancel_delete(self):
-        """Hủy bỏ việc xóa nhân vật"""
-        self.showing_delete_confirm = False
-        self.delete_confirm_index = -1
+		# Fonts
+		self.title_font = pygame.font.Font(f'{FONT_PATH}/Lycheesoda.ttf', 48)
+		self.header_font = pygame.font.Font(f'{FONT_PATH}/Lycheesoda.ttf', 32)
+		self.font = pygame.font.Font(f'{FONT_PATH}/Lycheesoda.ttf', 24)
+		
+		# Load danh sách nhân vật đã lưu
+		self.characters = PlayerDatabase.get_all_players()
+		self.selected_index = 0 if self.characters else -1
+		
+		# Trạng thái UI
+		self.active = True
+		self.create_new_mode = False  # Chế độ tạo nhân vật mới
+		self.name_input = ""  # Nhập tên nhân vật mới
+		self.input_active = False
+		
+		# Thành phần UI
+		self.bg_color = (20, 20, 30, 240)
+		
+		# Load hình ảnh nút
+		button_path = f'{GRAPHICS_PATH}/ui/button/'
+		self.new_btn_img = pygame.image.load(f'{button_path}new_button.png').convert_alpha()
+		self.select_btn_img = pygame.image.load(f'{button_path}select_button.png').convert_alpha() 
+		self.back_btn_img = pygame.image.load(f'{button_path}back_button.png').convert_alpha()
+		self.delete_btn_img = pygame.image.load(f'{button_path}delete_button.png').convert_alpha()
+		self.delete_btn_img = pygame.transform.scale(self.delete_btn_img, (30, 30))
+		
+		# Tạo nút
+		btn_scale = 2
+		btn_y = SCREEN_HEIGHT - 100
+		
+		self.new_button = Button(SCREEN_WIDTH//4, btn_y, self.new_btn_img, btn_scale, self.toggle_creation_mode)
+		self.select_button = Button(SCREEN_WIDTH//2, btn_y, self.select_btn_img, btn_scale, self.select_character)
+		self.back_button = Button(3*SCREEN_WIDTH//4, btn_y, self.back_btn_img, btn_scale, self.on_cancel_callback)
+		
+		# Kích thước thẻ nhân vật
+		self.card_width = 600
+		self.card_height = 100
+		self.card_padding = 20
+		self.scroll_offset = 0
+		self.visible_cards = 4
 
-    def load_character_preview(self, character_id):
-        """Tải hình ảnh xem trước cho nhân vật"""
-        # Giả định rằng bạn có đường dẫn đến sprite sheet cho nhân vật
-        # Đây chỉ là một ví dụ, cần điều chỉnh cho phù hợp với cấu trúc dự án của bạn
-        try:
-            # Cố gắng tải hình ảnh xem trước
-            character_data = PlayerDatabase.get_player_info(character_id)
-            if character_data:
-                # Giả sử có một đường dẫn avatar hoặc sprite sheet trong dữ liệu nhân vật
-                # Hoặc sử dụng một sprite sheet mặc định
-                character_sprites = pygame.image.load(f"{GRAPHICS_PATH}/character/bonnie.png").convert_alpha()
-                if character_sprites:
-                    self.avatar = character_sprites
-                    self.preview_character = character_id
-                    return True
-        except Exception as e:
-            print(f"Lỗi khi tải preview nhân vật: {e}")
-        
-        # Nếu không thể tải, sử dụng một hình ảnh giữ chỗ
-        fallback_image = pygame.Surface(self.preview_size)
-        fallback_image.fill((100, 100, 150))
-        self.avatar = [fallback_image]
-        return False
-        
+		self.showing_delete_confirm = False
+		self.delete_confirm_index = -1
+
+		# Thêm biến cho xem trước nhân vật
+		self.preview_character = None
+		self.avatar = []
+		
+		# Kích thước khung xem trước
+		self.preview_size = (120, 120)
+		
+	def toggle_creation_mode(self):
+		"""Chuyển đổi giữa chế độ chọn và tạo nhân vật"""
+		self.create_new_mode = not self.create_new_mode
+		self.name_input = ""
+		self.input_active = self.create_new_mode
+	
+	def select_character(self):
+		"""Chọn nhân vật hiện tại và quay lại game chính"""
+		if self.create_new_mode and self.name_input.strip():
+			# Tạo nhân vật mới với tên đã nhập
+			player_id = PlayerDatabase.create_player(self.name_input.strip())
+			self.on_select_callback(player_id)
+		elif self.selected_index >= 0 and self.selected_index < len(self.characters):
+			# Chọn nhân vật có sẵn
+			player_id = self.characters[self.selected_index]['player_id']
+			self.on_select_callback(player_id)
+		
+	def delete_character(self, index):
+		"""Hiển thị hộp xác nhận trước khi xóa nhân vật"""
+		if 0 <= index < len(self.characters):
+			self.showing_delete_confirm = True
+			self.delete_confirm_index = index
+	
+	def confirm_delete(self):
+		"""Xóa nhân vật sau khi xác nhận"""
+		if self.delete_confirm_index >= 0 and self.delete_confirm_index < len(self.characters):
+			player_id = self.characters[self.delete_confirm_index]['player_id']
+			PlayerDatabase.delete_player(player_id)
+			# Tải lại danh sách nhân vật sau khi xóa
+			self.characters = PlayerDatabase.get_all_players()
+			# Điều chỉnh chỉ số được chọn nếu cần
+			if self.selected_index >= len(self.characters):
+				self.selected_index = max(0, len(self.characters) - 1)
+			self.showing_delete_confirm = False
+			self.delete_confirm_index = -1
+	
+	def cancel_delete(self):
+		"""Hủy bỏ việc xóa nhân vật"""
+		self.showing_delete_confirm = False
+		self.delete_confirm_index = -1
+
+	def load_character_preview(self, character_id):
+		"""Tải hình ảnh xem trước cho nhân vật"""
+		# Giả định rằng bạn có đường dẫn đến sprite sheet cho nhân vật
+		# Đây chỉ là một ví dụ, cần điều chỉnh cho phù hợp với cấu trúc dự án của bạn
+		try:
+			# Cố gắng tải hình ảnh xem trước
+			character_data = PlayerDatabase.get_player_info(character_id)
+			if character_data:
+				# Giả sử có một đường dẫn avatar hoặc sprite sheet trong dữ liệu nhân vật
+				# Hoặc sử dụng một sprite sheet mặc định
+				character_sprites = pygame.image.load(f"{GRAPHICS_PATH}/character/bonnie.png").convert_alpha()
+				if character_sprites:
+					self.avatar = character_sprites
+					self.preview_character = character_id
+					return True
+		except Exception as e:
+			print(f"Lỗi khi tải preview nhân vật: {e}")
+		
+		# Nếu không thể tải, sử dụng một hình ảnh giữ chỗ
+		fallback_image = pygame.Surface(self.preview_size)
+		fallback_image.fill((100, 100, 150))
+		self.avatar = [fallback_image]
+		return False
+		
 
 
-    def handle_event(self, event):
-        """Xử lý sự kiện đầu vào"""
-        if not self.active:
-            return False
-            
-        # Xử lý xác nhận xóa
-        if self.showing_delete_confirm and event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_pos = pygame.mouse.get_pos()
-            
-            # Vị trí nút xác nhận và hủy
-            confirm_width, confirm_height = 400, 200
-            confirm_rect = pygame.Rect(
-                SCREEN_WIDTH//2 - confirm_width//2,
-                SCREEN_HEIGHT//2 - confirm_height//2,
-                confirm_width,
-                confirm_height
-            )
-            
-            yes_button_rect = pygame.Rect(confirm_rect.left + 80, confirm_rect.bottom - 60, 100, 40)
-            no_button_rect = pygame.Rect(confirm_rect.right - 180, confirm_rect.bottom - 60, 100, 40)
-            
-            if yes_button_rect.collidepoint(mouse_pos):
-                self.confirm_delete()
-                return True
-            elif no_button_rect.collidepoint(mouse_pos):
-                self.cancel_delete()
-                return True
-            
-            # Nếu người dùng nhấp bên ngoài hộp xác nhận, hủy thao tác
-            if not confirm_rect.collidepoint(mouse_pos):
-                self.cancel_delete()
-                return True
-                
-            return True
-            
-        # Các xử lý sự kiện khác chỉ khi không hiển thị hộp xác nhận
-        if not self.showing_delete_confirm:
-            # Xử lý phím tắt và điều hướng bàn phím
-            if event.type == pygame.KEYDOWN:
-                # Trong chế độ tạo mới
-                if self.create_new_mode and self.input_active:
-                    if event.key == pygame.K_BACKSPACE:
-                        self.name_input = self.name_input[:-1]
-                    elif event.key == pygame.K_RETURN:
-                        self.select_character()
-                    elif event.key == pygame.K_ESCAPE:
-                        self.toggle_creation_mode()  # Quay lại chế độ chọn
-                    elif len(self.name_input) < 20:  # Giới hạn độ dài tên
-                        self.name_input += event.unicode
-                # Trong chế độ chọn
-                elif not self.create_new_mode:
-                    if event.key == pygame.K_UP:
-                        # Di chuyển lên trong danh sách
-                        if self.selected_index > 0:
-                            self.selected_index -= 1
-                            # Điều chỉnh cuộn nếu cần
-                            if self.selected_index < self.scroll_offset:
-                                self.scroll_offset = self.selected_index
-                    elif event.key == pygame.K_DOWN:
-                        # Di chuyển xuống trong danh sách
-                        if self.selected_index < len(self.characters) - 1:
-                            self.selected_index += 1
-                            # Điều chỉnh cuộn nếu cần
-                            if self.selected_index >= self.scroll_offset + self.visible_cards:
-                                self.scroll_offset = self.selected_index - self.visible_cards + 1
-                    elif event.key == pygame.K_RETURN:
-                        # Chọn nhân vật hiện tại
-                        self.select_character()
-                    elif event.key == pygame.K_n:
-                        # Tạo nhân vật mới
-                        self.toggle_creation_mode()
-                    elif event.key == pygame.K_DELETE and self.selected_index >= 0:
-                        # Xóa nhân vật hiện tại
-                        self.delete_character(self.selected_index)
-                    elif event.key == pygame.K_ESCAPE:
-                        # Quay lại menu trước
-                        self.on_cancel_callback()
-                        
-            # Xử lý nhấp chuột
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_pos = event.pos
-                
-                # Kiểm tra chọn thẻ nhân vật
-                if not self.create_new_mode:
-                    for i in range(min(len(self.characters), self.visible_cards)):
-                        idx = i + self.scroll_offset
-                        if idx >= len(self.characters):
-                            break
-                            
-                        card_rect = self.get_card_rect(i)
-                        if card_rect.collidepoint(mouse_pos):
-                            self.selected_index = idx
-                            return True
-                            
-                        # Kiểm tra nút xóa
-                        delete_rect = pygame.Rect(
-                            card_rect.right - 30, 
-                            card_rect.top + 10, 
-                            20, 20
-                        )
-                        if delete_rect.collidepoint(mouse_pos):
-                            self.delete_character(idx)
-                            return True
-                
-                # Kiểm tra nhấp vào vùng nhập văn bản trong chế độ tạo
-                if self.create_new_mode:
-                    input_rect = pygame.Rect(SCREEN_WIDTH//2 - 150, SCREEN_HEIGHT//2 - 20, 300, 40)
-                    self.input_active = input_rect.collidepoint(mouse_pos)
-            
-            # Xử lý cuộn danh sách nhân vật
-            elif event.type == pygame.MOUSEWHEEL and not self.create_new_mode:
-                max_offset = max(0, len(self.characters) - self.visible_cards)
-                self.scroll_offset = max(0, min(self.scroll_offset - event.y, max_offset))
-                
-            return False
-        
-    def get_card_rect(self, index):
-        """Lấy hình chữ nhật cho thẻ nhân vật tại chỉ số đã cho"""
-        y = 150 + index * (self.card_height + self.card_padding)
-        return pygame.Rect(
-            SCREEN_WIDTH//2 - self.card_width//2,
-            y,
-            self.card_width,
-            self.card_height
-        )
-        
-    def update(self, dt):
-        """Cập nhật trạng thái UI"""
-        mouse_pos = pygame.mouse.get_pos()
-        
-        # Cập nhật các nút
-        self.new_button.update(mouse_pos)
-        self.select_button.update(mouse_pos)
-        self.back_button.update(mouse_pos)
-        
-        # Cập nhật hoạt ảnh xem trước nhân vật
-        if self.selected_index >= 0 and self.selected_index < len(self.characters):
-            char_id = self.characters[self.selected_index]['player_id']
-            if self.preview_character != char_id:
-                self.load_character_preview(char_id)
-        
-    def draw(self):
-        """Vẽ giao diện chọn nhân vật"""
-        if not self.active:
-            return
-            
-        # Vẽ nền bán trong suốt
-        overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
-        overlay.fill(self.bg_color)
-        self.display_surface.blit(overlay, (0, 0))
-        
-        # Vẽ tiêu đề
-        title = self.title_font.render("World Selection", True, (240, 230, 140))
-        title_rect = title.get_rect(center=(SCREEN_WIDTH//2, 70))
-        self.display_surface.blit(title, title_rect)
-        
-        if self.create_new_mode:
-            self.draw_creation_ui()
-        else:
-            self.draw_selection_ui()
-            
-        # Vẽ các nút
-        self.new_button.draw(self.display_surface)
-        self.select_button.draw(self.display_surface)
-        self.back_button.draw(self.display_surface)
-        
-        # Vẽ hộp xác nhận xóa nếu đang hiển thị
-        if self.showing_delete_confirm:
-            self.draw_delete_confirmation()
-            
-    def draw_selection_ui(self):
-        """Vẽ giao diện chọn nhân vật"""
-        # Vẽ hướng dẫn
-        if not self.characters:
-            no_chars = self.font.render("Can't find your world, create one!", True, (200, 200, 200))
-            no_chars_rect = no_chars.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
-            self.display_surface.blit(no_chars, no_chars_rect)
-            return
-        
-        # Vẽ xem trước nhân vật được chọn
-        if (self.selected_index >= 0 and self.selected_index < len(self.characters) and 
-            self.avatar and not self.showing_delete_confirm):
-            preview_image = self.avatar
-            # Đặt khung xem trước ở bên phải danh sách nhân vật
-            preview_rect = pygame.Rect(
-                SCREEN_WIDTH//2 + self.card_width//2 + 100,
-                SCREEN_HEIGHT//2 - 150,
-                150,
-                150
-            )
-            
-            # Vẽ nền cho khung xem trước
-            pygame.draw.rect(self.display_surface, (60, 60, 80), preview_rect, 0, 10)
-            pygame.draw.rect(self.display_surface, (140, 140, 160), preview_rect, 2, 10)
-            
-            # Vẽ hình ảnh xem trước được căn giữa
-            scaled_preview = pygame.transform.scale(preview_image, (120, 120))
-            # preview_img_rect = scaled_preview.get_rect(center=preview_rect.center)
-            # self.display_surface.blit(scaled_preview, preview_img_rect)
-            
-            # Vẽ tiêu đề xem trước
-            preview_title = self.font.render("Preview", True, (220, 220, 220))
-            preview_title_rect = preview_title.get_rect(midbottom=(preview_rect.centerx, preview_rect.top - 10))
-            self.display_surface.blit(preview_title, preview_title_rect)
-            
-            # Vẽ thêm thông tin nhân vật 
-            if self.selected_index < len(self.characters):
-                char = self.characters[self.selected_index]
-                char_details = [
-                    f"ID: {char['player_id'][:8]}...",
-                    f"Last played: {char.get('last_played', 'Chưa chơi')}",
-                ]
-                
-                detail_y = preview_rect.bottom + 20
-                for detail in char_details:
-                    detail_surf = self.font.render(detail, True, (200, 200, 200))
-                    detail_rect = detail_surf.get_rect(midtop=(preview_rect.centerx, detail_y))
-                    self.display_surface.blit(detail_surf, detail_rect)
-                    detail_y += 30
-            
-        # Vẽ các thẻ nhân vật và phần còn lại như đã có
-        for i in range(min(len(self.characters), self.visible_cards)):
-            idx = i + self.scroll_offset
-            if idx >= len(self.characters):
-                break
-                
-            char = self.characters[idx]
-            card_rect = self.get_card_rect(i)
-            
-            # Vẽ nền thẻ
-            card_color = (60, 60, 80) if idx == self.selected_index else (40, 40, 60)
-            pygame.draw.rect(self.display_surface, card_color, card_rect, 0, 10)
-            pygame.draw.rect(self.display_surface, (140, 140, 160), card_rect, 2, 10)
-            
-            # Vẽ tên nhân vật
-            name_text = self.font.render(char['player_name'], True, (255, 255, 255))
-            self.display_surface.blit(name_text, (card_rect.x + 20, card_rect.y + 15))
-            
-            # Vẽ thông tin nhân vật
-            last_played = char.get('last_played', 'Not played yet')
-            info_text = self.font.render(f"Last played: {last_played}", True, (200, 200, 200))
-            self.display_surface.blit(info_text, (card_rect.x + 20, card_rect.y + 55))
-            
-            # Vẽ nút xóa
-            delete_rect = pygame.Rect(card_rect.right - 30, card_rect.top + 10, 20, 20)
-            pygame.draw.rect(self.display_surface, (200, 60, 60), delete_rect, 0, 5)
-            pygame.draw.line(self.display_surface, (255, 255, 255), 
-                           (delete_rect.left + 5, delete_rect.centery), 
-                           (delete_rect.right - 5, delete_rect.centery), 2)
-            
-            # Vẽ xem trước nhân vật nếu được chọn
-            if idx == self.selected_index and self.avatar:
-                preview_rect = pygame.Rect(preview_rect.left + 15, preview_rect.top + 15, *self.preview_size)
-                preview_avatar = self.avatar
-                scaled_preview = pygame.transform.scale(preview_avatar, self.preview_size)
-                self.display_surface.blit(scaled_preview, preview_rect)
-        
-        # Vẽ chỉ báo cuộn nếu cần
-        if self.scroll_offset > 0:
-            pygame.draw.polygon(self.display_surface, (200, 200, 200), 
-                              [(SCREEN_WIDTH//2, 140), 
-                               (SCREEN_WIDTH//2 - 10, 130), 
-                               (SCREEN_WIDTH//2 + 10, 130)])
-        
-        if self.scroll_offset < len(self.characters) - self.visible_cards:
-            bottom_y = 150 + self.visible_cards * (self.card_height + self.card_padding) + 10
-            pygame.draw.polygon(self.display_surface, (200, 200, 200), 
-                              [(SCREEN_WIDTH//2, bottom_y), 
-                               (SCREEN_WIDTH//2 - 10, bottom_y - 10), 
-                               (SCREEN_WIDTH//2 + 10, bottom_y - 10)])
-            
-    def draw_creation_ui(self):
-        """Vẽ giao diện tạo nhân vật"""
-        # Vẽ hướng dẫn
-        instruction = self.header_font.render("Enter player name:", True, (220, 220, 220))
-        instruction_rect = instruction.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2 - 60))
-        self.display_surface.blit(instruction, instruction_rect)
-        
-        # Vẽ hộp nhập liệu
-        input_rect = pygame.Rect(SCREEN_WIDTH//2 - 150, SCREEN_HEIGHT//2 - 20, 300, 40)
-        input_color = (80, 80, 100) if self.input_active else (60, 60, 80)
-        pygame.draw.rect(self.display_surface, input_color, input_rect, 0, 5)
-        pygame.draw.rect(self.display_surface, (160, 160, 180), input_rect, 2, 5)
-        
-        # Vẽ văn bản nhập vào
-        input_text = self.font.render(self.name_input, True, (255, 255, 255))
-        input_text_rect = input_text.get_rect(midleft=(input_rect.left + 10, input_rect.centery))
-        self.display_surface.blit(input_text, input_text_rect)
-        
-        # Vẽ con trỏ nhấp nháy nếu đang nhập
-        if self.input_active and time.time() % 1 > 0.5:
-            cursor_x = input_text_rect.right + 2
-            if cursor_x - input_rect.left > 280:  # Ngăn con trỏ ra khỏi hộp nhập liệu
-                cursor_x = input_rect.left + 280
-            pygame.draw.line(self.display_surface, (255, 255, 255), 
-                           (cursor_x, input_rect.top + 10), 
-                           (cursor_x, input_rect.bottom - 10), 2)
-    
-    def draw_delete_confirmation(self):
-        """Vẽ hộp xác nhận xóa nhân vật"""
-        if not self.showing_delete_confirm:
-            return
-            
-        # Lấy tên nhân vật cần xóa
-        char_name = self.characters[self.delete_confirm_index]['name']
-        
-        # Vẽ nền mờ che phủ
-        overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 180))
-        self.display_surface.blit(overlay, (0, 0))
-        
-        # Vẽ hộp xác nhận
-        confirm_width, confirm_height = 400, 200
-        confirm_rect = pygame.Rect(
-            SCREEN_WIDTH//2 - confirm_width//2,
-            SCREEN_HEIGHT//2 - confirm_height//2,
-            confirm_width,
-            confirm_height
-        )
-        pygame.draw.rect(self.display_surface, (50, 50, 70), confirm_rect, 0, 15)
-        pygame.draw.rect(self.display_surface, (120, 120, 140), confirm_rect, 3, 15)
-        
-        # Vẽ tiêu đề và nội dung
-        title = self.header_font.render("Delete Confirmation", True, (220, 220, 100))
-        title_rect = title.get_rect(center=(SCREEN_WIDTH//2, confirm_rect.top + 40))
-        self.display_surface.blit(title, title_rect)
-        
-        message = self.font.render(f"Do you want to delete '{char_name}'?", True, (220, 220, 220))
-        message_rect = message.get_rect(center=(SCREEN_WIDTH//2, confirm_rect.top + 90))
-        self.display_surface.blit(message, message_rect)
-        
-        # Vẽ nút xác nhận và hủy
-        yes_button_rect = pygame.Rect(confirm_rect.left + 80, confirm_rect.bottom - 60, 100, 40)
-        no_button_rect = pygame.Rect(confirm_rect.right - 180, confirm_rect.bottom - 60, 100, 40)
-        
-        # Kiểm tra chuột có trỏ vào nút không
-        mouse_pos = pygame.mouse.get_pos()
-        yes_hover = yes_button_rect.collidepoint(mouse_pos)
-        no_hover = no_button_rect.collidepoint(mouse_pos)
-        
-        # Vẽ nút với màu sắc phù hợp
-        yes_color = (200, 60, 60) if yes_hover else (160, 60, 60)
-        no_color = (80, 100, 120) if no_hover else (60, 80, 100)
-        
-        pygame.draw.rect(self.display_surface, yes_color, yes_button_rect, 0, 5)
-        pygame.draw.rect(self.display_surface, no_color, no_button_rect, 0, 5)
-        
-        # Vẽ chữ trên nút
-        yes_text = self.font.render("Delete", True, (255, 255, 255))
-        no_text = self.font.render("Cancle", True, (255, 255, 255))
-        
-        yes_text_rect = yes_text.get_rect(center=yes_button_rect.center)
-        no_text_rect = no_text.get_rect(center=no_button_rect.center)
-        
-        self.display_surface.blit(yes_text, yes_text_rect)
-        self.display_surface.blit(no_text, no_text_rect)
+	def handle_event(self, event):
+		"""Xử lý sự kiện đầu vào"""
+		if not self.active:
+			return False
+			
+		# Xử lý xác nhận xóa
+		if self.showing_delete_confirm and event.type == pygame.MOUSEBUTTONDOWN:
+			mouse_pos = pygame.mouse.get_pos()
+			
+
+			
+			# Vị trí nút xác nhận và hủy
+			confirm_width, confirm_height = 400, 200
+			confirm_rect = pygame.Rect(
+				SCREEN_WIDTH//2 - confirm_width//2,
+				SCREEN_HEIGHT//2 - confirm_height//2,
+				confirm_width,
+				confirm_height
+			)
+			
+			yes_button_rect = pygame.Rect(confirm_rect.left + 80, confirm_rect.bottom - 60, 100, 40)
+			no_button_rect = pygame.Rect(confirm_rect.right - 180, confirm_rect.bottom - 60, 100, 40)
+			
+			if yes_button_rect.collidepoint(mouse_pos):
+				self.confirm_delete()
+				return True
+			elif no_button_rect.collidepoint(mouse_pos):
+				self.cancel_delete()
+				return True
+			
+			# Nếu người dùng nhấp bên ngoài hộp xác nhận, hủy thao tác
+			if not confirm_rect.collidepoint(mouse_pos):
+				self.cancel_delete()
+				return True
+				
+			return True
+			
+		# Các xử lý sự kiện khác chỉ khi không hiển thị hộp xác nhận
+		if not self.showing_delete_confirm:
+			# Xử lý phím tắt và điều hướng bàn phím
+			if event.type == pygame.KEYDOWN:
+				# Trong chế độ tạo mới
+				if self.create_new_mode and self.input_active:
+					if event.key == pygame.K_BACKSPACE:
+						self.name_input = self.name_input[:-1]
+					elif event.key == pygame.K_RETURN:
+						self.select_character()
+					elif event.key == pygame.K_ESCAPE:
+						self.toggle_creation_mode()  # Quay lại chế độ chọn
+					elif len(self.name_input) < 20:  # Giới hạn độ dài tên
+						self.name_input += event.unicode
+				# Trong chế độ chọn
+				elif not self.create_new_mode:
+					if event.key == pygame.K_UP:
+						# Di chuyển lên trong danh sách
+						if self.selected_index > 0:
+							self.selected_index -= 1
+							# Điều chỉnh cuộn nếu cần
+							if self.selected_index < self.scroll_offset:
+								self.scroll_offset = self.selected_index
+					elif event.key == pygame.K_DOWN:
+						# Di chuyển xuống trong danh sách
+						if self.selected_index < len(self.characters) - 1:
+							self.selected_index += 1
+							# Điều chỉnh cuộn nếu cần
+							if self.selected_index >= self.scroll_offset + self.visible_cards:
+								self.scroll_offset = self.selected_index - self.visible_cards + 1
+					elif event.key == pygame.K_RETURN:
+						# Chọn nhân vật hiện tại
+						self.select_character()
+					elif event.key == pygame.K_n:
+						# Tạo nhân vật mới
+						self.toggle_creation_mode()
+					elif event.key == pygame.K_DELETE and self.selected_index >= 0:
+						# Xóa nhân vật hiện tại
+						self.delete_character(self.selected_index)
+					elif event.key == pygame.K_ESCAPE:
+						# Quay lại menu trước
+						self.on_cancel_callback()
+						
+			# Xử lý nhấp chuột
+			elif event.type == pygame.MOUSEBUTTONDOWN:
+				mouse_pos = event.pos
+				
+				# Kiểm tra chọn thẻ nhân vật
+				if not self.create_new_mode:
+					for i in range(min(len(self.characters), self.visible_cards)):
+						idx = i + self.scroll_offset
+						if idx >= len(self.characters):
+							break
+							
+						card_rect = self.get_card_rect(i)
+						# Tạo delete_rect cho mỗi card
+						delete_rect = pygame.Rect(
+							card_rect.right - 30, 
+							card_rect.top + 10, 
+							40, 40
+						)
+						
+						# Kiểm tra click vào nút xóa trước
+						if delete_rect.collidepoint(mouse_pos):
+							self.delete_character(idx)
+							return True
+						# Nếu không phải nút xóa, kiểm tra click vào card
+						elif card_rect.collidepoint(mouse_pos):
+							self.selected_index = idx
+							return True
+				
+				# Kiểm tra nhấp vào vùng nhập văn bản trong chế độ tạo
+				if self.create_new_mode:
+					input_rect = pygame.Rect(SCREEN_WIDTH//2 - 150, SCREEN_HEIGHT//2 - 20, 300, 40)
+					self.input_active = input_rect.collidepoint(mouse_pos)
+			
+			# Xử lý cuộn danh sách nhân vật
+			elif event.type == pygame.MOUSEWHEEL and not self.create_new_mode:
+				max_offset = max(0, len(self.characters) - self.visible_cards)
+				self.scroll_offset = max(0, min(self.scroll_offset - event.y, max_offset))
+				
+			return False
+		
+	def get_card_rect(self, index):
+		"""Lấy hình chữ nhật cho thẻ nhân vật tại chỉ số đã cho"""
+		y = 150 + index * (self.card_height + self.card_padding)
+		return pygame.Rect(
+			SCREEN_WIDTH//2 - self.card_width//2,
+			y,
+			self.card_width,
+			self.card_height
+		)
+		
+	def update(self, dt):
+		"""Cập nhật trạng thái UI"""
+		mouse_pos = pygame.mouse.get_pos()
+		
+		# Cập nhật các nút
+		self.new_button.update(mouse_pos)
+		self.select_button.update(mouse_pos)
+		self.back_button.update(mouse_pos)
+		
+		# Cập nhật hoạt ảnh xem trước nhân vật
+		if self.selected_index >= 0 and self.selected_index < len(self.characters):
+			char_id = self.characters[self.selected_index]['player_id']
+			if self.preview_character != char_id:
+				self.load_character_preview(char_id)
+		
+	def draw(self):
+		"""Vẽ giao diện chọn nhân vật"""
+		if not self.active:
+			return
+			
+		# Vẽ nền bán trong suốt
+		overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+		overlay.fill(self.bg_color)
+		self.display_surface.blit(overlay, (0, 0))
+		
+		# Vẽ tiêu đề
+		title = self.title_font.render("World Selection", True, (240, 230, 140))
+		title_rect = title.get_rect(center=(SCREEN_WIDTH//2, 70))
+		self.display_surface.blit(title, title_rect)
+		
+		if self.create_new_mode:
+			self.draw_creation_ui()
+		else:
+			self.draw_selection_ui()
+			
+		# Vẽ các nút
+		self.new_button.draw(self.display_surface)
+		self.select_button.draw(self.display_surface)
+		self.back_button.draw(self.display_surface)
+		
+		# Vẽ hộp xác nhận xóa nếu đang hiển thị
+		if self.showing_delete_confirm:
+			self.draw_delete_confirmation()
+			
+	def draw_selection_ui(self):
+		"""Vẽ giao diện chọn nhân vật"""
+		# Vẽ hướng dẫn
+		if not self.characters:
+			no_chars = self.font.render("Can't find your world, create one!", True, (200, 200, 200))
+			no_chars_rect = no_chars.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
+			self.display_surface.blit(no_chars, no_chars_rect)
+			return
+		
+		# Vẽ xem trước nhân vật được chọn
+		if (self.selected_index >= 0 and self.selected_index < len(self.characters) and 
+			self.avatar and not self.showing_delete_confirm):
+			preview_image = self.avatar
+			# Đặt khung xem trước ở bên phải danh sách nhân vật
+			self.preview_rect = pygame.Rect(
+				SCREEN_WIDTH//2 + self.card_width//2 + 100,
+				SCREEN_HEIGHT//2 - 150,
+				150,
+				150
+			)
+			
+			# Vẽ nền cho khung xem trước
+			pygame.draw.rect(self.display_surface, (60, 60, 80), self.preview_rect, 0, 10)
+			pygame.draw.rect(self.display_surface, (140, 140, 160), self.preview_rect, 2, 10)
+			
+			# Vẽ hình ảnh xem trước được căn giữa
+			scaled_preview = pygame.transform.scale(preview_image, (120, 120))
+			# preview_img_rect = scaled_preview.get_rect(center=preview_rect.center)
+			# self.display_surface.blit(scaled_preview, preview_img_rect)
+			
+			# Vẽ tiêu đề xem trước
+			preview_title = self.font.render("Preview", True, (220, 220, 220))
+			preview_title_rect = preview_title.get_rect(midbottom=(self.preview_rect.centerx, self.preview_rect.top - 10))
+			self.display_surface.blit(preview_title, preview_title_rect)
+			
+			# Vẽ thêm thông tin nhân vật 
+			if self.selected_index < len(self.characters):
+				char = self.characters[self.selected_index]
+				char_details = [
+					f"ID: {char['player_id'][:8]}...",
+					f"Last played: {char.get('last_played', 'Chưa chơi')}",
+				]
+				
+				detail_y = self.preview_rect.bottom + 20
+				for detail in char_details:
+					detail_surf = self.font.render(detail, True, (200, 200, 200))
+					detail_rect = detail_surf.get_rect(midtop=(self.preview_rect.centerx, detail_y))
+					self.display_surface.blit(detail_surf, detail_rect)
+					detail_y += 30
+			
+		# Vẽ các thẻ nhân vật và phần còn lại như đã có
+		for i in range(min(len(self.characters), self.visible_cards)):
+			idx = i + self.scroll_offset
+			if idx >= len(self.characters):
+				break
+				
+			char = self.characters[idx]
+			card_rect = self.get_card_rect(i)
+			
+			# Vẽ nền thẻ
+			card_color = (60, 60, 80) if idx == self.selected_index else (40, 40, 60)
+			pygame.draw.rect(self.display_surface, card_color, card_rect, 0, 10)
+			pygame.draw.rect(self.display_surface, (140, 140, 160), card_rect, 2, 10)
+			
+			# Vẽ tên nhân vật
+			name_text = self.font.render(char['player_name'], True, (255, 255, 255))
+			self.display_surface.blit(name_text, (card_rect.x + 20, card_rect.y + 15))
+			
+			# Vẽ thông tin nhân vật
+			last_played = char.get('last_played', 'Not played yet')
+			info_text = self.font.render(f"Last played: {last_played}", True, (200, 200, 200))
+			self.display_surface.blit(info_text, (card_rect.x + 20, card_rect.y + 55))
+			
+			# Vẽ nút xóa
+			self.delete_rect = self.delete_btn_img.get_rect(topright=(card_rect.right - 10, card_rect.top + 10))
+			self.display_surface.blit(self.delete_btn_img, self.delete_rect)
+			
+			# Vẽ xem trước nhân vật nếu được chọn
+			if idx == self.selected_index and self.avatar:
+				self.preview_rect = pygame.Rect(self.preview_rect.left + 15, self.preview_rect.top + 15, *self.preview_size)
+				preview_avatar = self.avatar
+				scaled_preview = pygame.transform.scale(preview_avatar, self.preview_size)
+				self.display_surface.blit(scaled_preview, self.preview_rect)
+		
+		# Vẽ chỉ báo cuộn nếu cần
+		if self.scroll_offset > 0:
+			pygame.draw.polygon(self.display_surface, (200, 200, 200), 
+							  [(SCREEN_WIDTH//2, 120), 
+							   (SCREEN_WIDTH//2 - 10, 130), 
+							   (SCREEN_WIDTH//2 + 10, 130)])
+		
+		if self.scroll_offset < len(self.characters) - self.visible_cards:
+			bottom_y = 150 + self.visible_cards * (self.card_height + self.card_padding) + 10
+			pygame.draw.polygon(self.display_surface, (200, 200, 200), 
+							  [(SCREEN_WIDTH//2, bottom_y), 
+							   (SCREEN_WIDTH//2 - 10, bottom_y - 10), 
+							   (SCREEN_WIDTH//2 + 10, bottom_y - 10)])
+			
+	def draw_creation_ui(self):
+		"""Vẽ giao diện tạo nhân vật"""
+		# Vẽ hướng dẫn
+		instruction = self.header_font.render("Enter player name:", True, (220, 220, 220))
+		instruction_rect = instruction.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2 - 60))
+		self.display_surface.blit(instruction, instruction_rect)
+		
+		# Vẽ hộp nhập liệu
+		input_rect = pygame.Rect(SCREEN_WIDTH//2 - 150, SCREEN_HEIGHT//2 - 20, 300, 40)
+		input_color = (80, 80, 100) if self.input_active else (60, 60, 80)
+		pygame.draw.rect(self.display_surface, input_color, input_rect, 0, 5)
+		pygame.draw.rect(self.display_surface, (160, 160, 180), input_rect, 2, 5)
+		
+		# Vẽ văn bản nhập vào
+		input_text = self.font.render(self.name_input, True, (255, 255, 255))
+		input_text_rect = input_text.get_rect(midleft=(input_rect.left + 10, input_rect.centery))
+		self.display_surface.blit(input_text, input_text_rect)
+		
+		# Vẽ con trỏ nhấp nháy nếu đang nhập
+		if self.input_active and time.time() % 1 > 0.5:
+			cursor_x = input_text_rect.right + 2
+			if cursor_x - input_rect.left > 280:  # Ngăn con trỏ ra khỏi hộp nhập liệu
+				cursor_x = input_rect.left + 280
+			pygame.draw.line(self.display_surface, (255, 255, 255), 
+						   (cursor_x, input_rect.top + 10), 
+						   (cursor_x, input_rect.bottom - 10), 2)
+	
+	def draw_delete_confirmation(self):
+		"""Vẽ hộp xác nhận xóa nhân vật"""
+		if not self.showing_delete_confirm:
+			return
+			
+		# Lấy tên nhân vật cần xóa
+		char_name = self.characters[self.delete_confirm_index]['player_name']
+		
+		# Vẽ nền mờ che phủ
+		overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+		overlay.fill((0, 0, 0, 180))
+		self.display_surface.blit(overlay, (0, 0))
+		
+		# Vẽ hộp xác nhận
+		confirm_width, confirm_height = 400, 200
+		confirm_rect = pygame.Rect(
+			SCREEN_WIDTH//2 - confirm_width//2,
+			SCREEN_HEIGHT//2 - confirm_height//2,
+			confirm_width,
+			confirm_height
+		)
+		pygame.draw.rect(self.display_surface, (50, 50, 70), confirm_rect, 0, 15)
+		pygame.draw.rect(self.display_surface, (120, 120, 140), confirm_rect, 3, 15)
+		
+		# Vẽ tiêu đề và nội dung
+		title = self.header_font.render("Delete Confirmation", True, (220, 220, 100))
+		title_rect = title.get_rect(center=(SCREEN_WIDTH//2, confirm_rect.top + 40))
+		self.display_surface.blit(title, title_rect)
+		
+		message = self.font.render(f"Do you want to delete '{char_name}'?", True, (220, 220, 220))
+		message_rect = message.get_rect(center=(SCREEN_WIDTH//2, confirm_rect.top + 90))
+		self.display_surface.blit(message, message_rect)
+		
+		# Vẽ nút xác nhận và hủy
+		yes_button_rect = pygame.Rect(confirm_rect.left + 80, confirm_rect.bottom - 60, 100, 40)
+		no_button_rect = pygame.Rect(confirm_rect.right - 180, confirm_rect.bottom - 60, 100, 40)
+		
+		# Kiểm tra chuột có trỏ vào nút không
+		mouse_pos = pygame.mouse.get_pos()
+		yes_hover = yes_button_rect.collidepoint(mouse_pos)
+		no_hover = no_button_rect.collidepoint(mouse_pos)
+		
+		# Vẽ nút với màu sắc phù hợp
+		yes_color = (200, 60, 60) if yes_hover else (160, 60, 60)
+		no_color = (80, 100, 120) if no_hover else (60, 80, 100)
+		
+		pygame.draw.rect(self.display_surface, yes_color, yes_button_rect, 0, 5)
+		pygame.draw.rect(self.display_surface, no_color, no_button_rect, 0, 5)
+		
+		# Vẽ chữ trên nút
+		yes_text = self.font.render("Delete", True, (255, 255, 255))
+		no_text = self.font.render("Cancle", True, (255, 255, 255))
+		
+		yes_text_rect = yes_text.get_rect(center=yes_button_rect.center)
+		no_text_rect = no_text.get_rect(center=no_button_rect.center)
+		
+		self.display_surface.blit(yes_text, yes_text_rect)
+		self.display_surface.blit(no_text, no_text_rect)
 
