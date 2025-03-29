@@ -32,7 +32,8 @@ class Game:
 		self.main_menu_screen = MainMenu(self.screen)
 		self.pause_menu_screen = PauseMenu(self.screen)
 		self.character_select_ui = None  # Sẽ được khởi tạo khi cần thiết
-		self.level = Level()
+		player_id = 1
+		self.level = Level(str(player_id))
 		self.shop_menu = ShopMenu(self.level.player, self.level.toggle_shop)
 
 		self.timer = Timer(300)
@@ -53,6 +54,11 @@ class Game:
 		
 		# Tạo mission_ui
 		self.mission_ui = MissionUI(self.mission_manager)
+		
+	def __del__(self):
+		"""Destructor để dọn dẹp tài nguyên khi thoát game"""
+		if hasattr(self, 'level') and self.level:
+			self.level.cleanup()
 		
 	def run(self):
 		fps_overlay = FPSOverlay()
@@ -106,10 +112,17 @@ class Game:
 			self.player_id = player_id
 			self.game_state = "game"
 			
-			# Khởi tạo level với player_id đã chọn
-			self.level = Level(player_id=player_id)
+			 # Dọn dẹp Level cũ nếu đã có
+			if hasattr(self, 'level') and self.level:
+				self.level.cleanup()
 			
-			# Khởi tạo lại các component phụ thuộc vào level
+			# Khởi tạo Level mới với player_id đã chọn
+			self.level = Level(str(player_id))
+			
+			# Load dữ liệu game sau khi đã khởi tạo Level
+			self.level.load_game()
+			
+			# Khởi tạo lại các component phụ thuộc vào Level
 			self.shop_menu = ShopMenu(self.level.player, self.level.toggle_shop)
 			self.mission_manager = MissionManager(player_id=player_id, player=self.level.player)
 			self.mission_manager.load_player_missions()
@@ -120,7 +133,6 @@ class Game:
 			"""Được gọi khi người chơi hủy chọn nhân vật"""
 			self.game_state = "menu"
 			self.main_menu_screen.running = True
-		
 		# Khởi tạo UI chọn nhân vật
 		self.character_select_ui = CharacterSelectUI(
 			self.screen,
@@ -132,9 +144,11 @@ class Game:
 		"""Handle escape key press"""
 		if self.game_state == "character_select":
 			self.game_state = "menu"
+			self.level.cleanup()
 			self.main_menu_screen.running = True
 		elif self.game_state == "game":
 			self.game_state = "paused"
+			self.reset_pause_menu()
 		elif self.game_state == "shop":
 			self.game_state = "game"
 			self.level.shop_active = False
@@ -181,14 +195,12 @@ class Game:
 				else:
 					# Trường hợp khác (nếu có)
 					self.game_state = "game"
-					self.level.load_game()
 					self.reset_pause_menu()
 		
 		elif self.game_state == "character_select":
 			# Xử lý sự kiện và vẽ UI chọn nhân vật
 			self.character_select_ui.update(dt)
 			self.character_select_ui.draw()
-			# Không cần gọi pygame.display.flip() ở đây vì nó được gọi ở cuối phương thức này
 		
 		elif self.game_state == "paused":
 			self.level.run(dt)
@@ -229,7 +241,7 @@ class Game:
 		self.pause_menu_screen.active = False
 		self.pause_menu_screen.resume_clicked = False
 		self.pause_menu_screen.to_home_active = False
-
+				
 if __name__ == '__main__':
 	game = Game()
 	game.run()

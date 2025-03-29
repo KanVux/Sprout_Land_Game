@@ -998,7 +998,7 @@ class CharacterSelectUI:
             # Chọn nhân vật có sẵn
             player_id = self.characters[self.selected_index]['player_id']
             self.on_select_callback(player_id)
-    
+		
     def delete_character(self, index):
         """Hiển thị hộp xác nhận trước khi xóa nhân vật"""
         if 0 <= index < len(self.characters):

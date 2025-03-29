@@ -26,6 +26,9 @@ class Level:
 		# Get the display surface
 		self.display_surface = pygame.display.get_surface()
 
+		 # Dừng nhạc nền hiện tại nếu có
+		pygame.mixer.stop()
+
 		# Sprite groups
 		self.all_sprites = CameraGroup()
 		self.tree_sprites = pygame.sprite.Group()  # Only for trees
@@ -33,6 +36,7 @@ class Level:
 		self.interaction_sprites = pygame.sprite.Group()
 
 		self.soil_layer = SoildLayer(self.all_sprites, self.obstacle_sprites)
+		self.player_id = player_id
 		self.setup()
 		# Sky
 		self.rain = Rain(self.all_sprites)
@@ -81,17 +85,7 @@ class Level:
 		self.rain_elapsed = 0  # biến tích lũy thời gian mưa (giây)
 		self.rain_duration = 0  # thời gian mưa hiện tại (giây)
 
-		# Nếu cung cấp player_id, sử dụng nó
-		self.player_id = player_id
-		# self.player = Player(
-		# 	pos=(640, 360),
-		# 	group=self.all_sprites,
-		# 	collision_sprites=self.obstacle_sprites,
-		# 	tree_sprites=self.tree_sprites,
-		# 	soil_layer=self.soil_layer,
-		# 	interaction=self.interaction_sprites,
-		# 	player_id=self.player_id
-		# )
+
 
 	def toggle_debug(self):
 		self.all_sprites.toggle_debug()
@@ -171,6 +165,7 @@ class Level:
 					interaction_sprites= self.interaction_sprites,
 					soil_layer= self.soil_layer,
 					toggle_shop = self.toggle_shop,
+					player_id=self.player_id
 					)
 				
 			if obj.name == 'Bed':
@@ -356,10 +351,10 @@ class Level:
 
 	def load_game(self):
 		"""Load game data for the current player"""
+
 		if not self.player_id:
 			print("No player ID specified, cannot load game")
 			return False
-			
 		try:
 			game_state = PlayerDatabase.load_game_state(self.player.player_id)
 			if not game_state:
@@ -488,6 +483,22 @@ class Level:
 					)
 					self.soil_layer.soil_timers[(col_index, row_index)].activate()
 
+	def cleanup(self):
+		"""Dọn dẹp tài nguyên khi Level bị hủy"""
+		# Dừng nhạc nền
+		background_music.stop()
+		
+		# Xóa tất cả sprite để giải phóng bộ nhớ
+		for sprite in self.all_sprites:
+			sprite.kill()
+		self.all_sprites.empty()
+		self.tree_sprites.empty()
+		self.obstacle_sprites.empty()
+		self.interaction_sprites.empty()
+		
+		# Xóa các timer nếu có
+		if hasattr(self.soil_layer, 'soil_timers'):
+			self.soil_layer.soil_timers.clear()
 
 	def run(self, dt):
 		# Draw

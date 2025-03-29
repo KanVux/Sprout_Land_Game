@@ -12,13 +12,13 @@ from scripts.helpers.timer import Timer
 from scripts.ui.inventory_ui import InventoryUI
 from settings import *
 class Player(pygame.sprite.Sprite):
-	def __init__(self, pos, group, collision_sprites, tree_sprites, interaction_sprites, soil_layer, toggle_shop):
+	def __init__(self, pos, group, collision_sprites, tree_sprites, interaction_sprites, soil_layer, toggle_shop, player_id):
 		super().__init__(group)
 		self.keys_bind = SettingsDB.get_settings()['keys_bind']
 		
 		self.mission_manager = MissionManager(player_id=1, player=self) 
 
-		self.player_id = 1
+		self.player_id = player_id
 
 		self.import_assets()
 
@@ -86,7 +86,7 @@ class Player(pygame.sprite.Sprite):
 		from scripts.ui.overlay import Overlay
 		self.overlay = Overlay(self)
 		
-
+		
 
 	def save_inventory(self):
 		"""Lưu inventory vào cơ sở dữ liệu"""

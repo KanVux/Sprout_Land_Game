@@ -213,30 +213,7 @@ class PlayerDatabase:
                 INSERT INTO players (player_id, player_name, created_at, last_played)
                 VALUES (%s, %s, NOW(), NOW())
             """, (player_id, player_name))
-            
-            # Initialize player inventory with starter items
-            cursor.execute("""
-                INSERT INTO inventory (player_id, item_id, quantity, slot_number)
-                VALUES (%s, 17, 200, 0)  -- Starting with 200 coins
-            """, (player_id,))
-            
-            # Add a hoe tool
-            cursor.execute("""
-                INSERT INTO inventory (player_id, item_id, quantity, slot_number)
-                VALUES (%s, 1, 1, 1)  -- Add a hoe tool
-            """, (player_id,))
-            
-            # Create initial game state
-            cursor.execute("""
-                INSERT INTO game_states (player_id, position_x, position_y, game_time, is_raining)
-                VALUES (%s, 640, 360, 0, 0)
-            """, (player_id,))
-            
-            # Create initial world state
-            cursor.execute("""
-                INSERT INTO world_states (player_id, soil_grid, planted_crops, trees_state, water_grid, time_of_day)
-                VALUES (%s, '[]', '[]', '[]', '[]', 12.0)
-            """, (player_id,))
+        
             
             connection.commit()
             return player_id
