@@ -120,15 +120,15 @@ class PauseMenu:
 		self.pause_rect = self.pause_bg.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
 
 		# Load button images
-		self.resume_image = pygame.image.load(f'{GRAPHICS_PATH}/ui/resume_btn.png').convert_alpha()
-		self.exit_to_home_image = pygame.image.load(f'{GRAPHICS_PATH}/ui/exit_to_home_btn.png').convert_alpha()
+		self.resume_image = pygame.image.load(f'{GRAPHICS_PATH}/ui/button/resume_button.png').convert_alpha()
+		self.exit_to_home_image = pygame.image.load(f'{GRAPHICS_PATH}/ui/button/home_button.png').convert_alpha()
 
 		# Create buttons with timers
 		self.resume_button = Button(
 			SCREEN_WIDTH // 2, 
 			SCREEN_HEIGHT // 2 - 30,
 			self.resume_image,
-			1.5,
+			2.1,
 			self.toggle_pause
 		)
 		
@@ -136,7 +136,7 @@ class PauseMenu:
 			SCREEN_WIDTH // 2,
 			SCREEN_HEIGHT // 2 + 30 ,
 			self.exit_to_home_image,
-			1.5,
+			2.1,
 			self.exit_to_home
 		)
 
@@ -663,7 +663,7 @@ class SettingsMenu:
 		# Create the Back button (used to exit settings)
 		self.back_surf = pygame.image.load(f"{GRAPHICS_PATH}/ui/button/exit_button_off.png").convert_alpha()
 		self.back_surf_scaled = pygame.transform.scale_by(self.back_surf, 1.6)
-		self.back_button = Button(80, SCREEN_HEIGHT - 70, self.back_surf_scaled, 1, self.exit_settings)
+		self.back_button = Button(80, SCREEN_HEIGHT - 75, self.back_surf_scaled, 1.5, self.exit_settings)
 
 		# Setup volume control buttons (code omitted for brevity)
 		# Nút tăng âm lượng 
@@ -684,14 +684,15 @@ class SettingsMenu:
 		# Vẽ trạng thái mute
 		self.mute_surf_on = pygame.image.load(f'{GRAPHICS_PATH}/ui/button/mute_button_on.png')
 		self.mute_surf_off = pygame.image.load(f'{GRAPHICS_PATH}/ui/button/mute_button_off.png')
-		self.mute_surf = self.mute_surf_off
-		self.mute_surf_scaled = pygame.transform.scale_by(self.mute_surf, 1.6)
 		
+		self.mute_surf_on = pygame.transform.scale_by(self.mute_surf_on, 1.6)
+		self.mute_surf_off = pygame.transform.scale_by(self.mute_surf_off, 1.6)
+
 
 		# Tạo nút
-		self.volume_up_button = Button(0, 100, self.volume_up_surf_off, 1, self.increase_volume, pressed_image= self.volume_up_surf_on)
-		self.volume_down_button = Button(0, 100, self.volume_down_surf_off, 1, self.decrease_volume,pressed_image= self.volume_down_surf_on)
-		self.volume_mute_button = Button(0, 100, self.mute_surf_scaled, 1, self.mute_volume)
+		self.volume_up_button = Button(0, 100, self.volume_up_surf_off, 1.5, self.increase_volume, pressed_image= self.volume_up_surf_on)
+		self.volume_down_button = Button(0, 100, self.volume_down_surf_off, 1.5, self.decrease_volume,pressed_image= self.volume_down_surf_on)
+		self.volume_mute_button = Button(0, 100, self.mute_surf_off, 1.5, self.mute_volume)
 		
 		self.running = True
 
@@ -838,7 +839,7 @@ class SettingsMenu:
 		# Draw volume and volume buttons (code omitted for brevity)
 		# Tạo thanh âm lượng
 		self.volume_surf = self.volume_surfs[self.volume]
-		self.volume_surf_scaled = pygame.transform.scale_by(self.volume_surf, 3)
+		self.volume_surf_scaled = pygame.transform.scale_by(self.volume_surf, 4)
 		self.volume_rect = self.volume_surf_scaled.get_rect(centerx = self.settings_rect.centerx, centery = 120)
 		
 		# Cho nó ở 2 bên cạnh của thanh âm lượng
@@ -893,8 +894,8 @@ class ConfirmationPopup:
 		# Create Yes and No buttons. Adjust image paths as needed.
 		yes_image = pygame.image.load(f'{GRAPHICS_PATH}/ui/confirm_popup/button_white_up.png').convert_alpha()
 		no_image = pygame.image.load(f'{GRAPHICS_PATH}/ui/confirm_popup/button_Orange_up.png').convert_alpha()
-		self.yes_button = Button(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 50, yes_image, 1.5, self.confirm)
-		self.no_button = Button(SCREEN_WIDTH // 2 + 100, SCREEN_HEIGHT // 2 + 50, no_image, 1.5, self.cancel)
+		self.yes_button = Button(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 50, yes_image, 2.3, self.confirm)
+		self.no_button = Button(SCREEN_WIDTH // 2 + 100, SCREEN_HEIGHT // 2 + 50, no_image, 2.3, self.cancel)
 		self.running = True
 
 	def confirm(self):
@@ -965,8 +966,8 @@ class CharacterSelectUI:
         self.back_button = Button(3*SCREEN_WIDTH//4, btn_y, self.back_btn_img, btn_scale, self.on_cancel_callback)
         
         # Kích thước thẻ nhân vật
-        self.card_width = 300
-        self.card_height = 120
+        self.card_width = 600
+        self.card_height = 100
         self.card_padding = 20
         self.scroll_offset = 0
         self.visible_cards = 4
@@ -977,9 +978,6 @@ class CharacterSelectUI:
         # Thêm biến cho xem trước nhân vật
         self.preview_character = None
         self.avatar = []
-        self.preview_frame_index = 0
-        self.preview_animation_speed = 0.15
-        self.preview_animation_timer = 0
         
         # Kích thước khung xem trước
         self.preview_size = (120, 120)
@@ -1236,8 +1234,8 @@ class CharacterSelectUI:
             preview_image = self.avatar
             # Đặt khung xem trước ở bên phải danh sách nhân vật
             preview_rect = pygame.Rect(
-                SCREEN_WIDTH//2 + self.card_width//2 + 50,
-                SCREEN_HEIGHT//2 - 100,
+                SCREEN_WIDTH//2 + self.card_width//2 + 100,
+                SCREEN_HEIGHT//2 - 150,
                 150,
                 150
             )
