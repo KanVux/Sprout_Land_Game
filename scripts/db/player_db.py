@@ -8,7 +8,7 @@ from scripts.db.db import DatabaseConnection, Error
 class PlayerData:
     def __init__(self, player_data):
         self.player_id = player_data['player_id']
-        self.name = player_data['name']
+        self.name = player_data['player_name']
         self.money = player_data['money']
 
 class PlayerDatabase:
@@ -123,7 +123,7 @@ class PlayerDatabase:
             cursor.execute("""
                 SELECT * FROM game_states 
                 WHERE player_id = %s
-            """, (player_id,))
+            """, (str(player_id),))
             game_state = cursor.fetchone()
             
             if not game_state:
@@ -133,7 +133,7 @@ class PlayerDatabase:
             cursor.execute("""
                 SELECT * FROM world_states
                 WHERE player_id = %s
-            """, (player_id,))
+            """, (str(player_id),))
             world_state = cursor.fetchone()
             
             if not world_state:
@@ -180,7 +180,7 @@ class PlayerDatabase:
                 
             cursor = connection.cursor(dictionary=True)
             cursor.execute("""
-                SELECT player_id, name, created_at, last_played, 
+                SELECT player_id, player_name, created_at, last_played, 
                        COALESCE((SELECT quantity FROM inventory WHERE player_id = players.player_id AND item_id = 17), 0) as money
                 FROM players
                 ORDER BY last_played DESC
@@ -199,7 +199,7 @@ class PlayerDatabase:
                 connection.close()
 
     @staticmethod
-    def create_player(name):
+    def create_player(player_name):
         """Create a new player character"""
         connection = None
         cursor = None
@@ -213,9 +213,9 @@ class PlayerDatabase:
             
             # Create player entry
             cursor.execute("""
-                INSERT INTO players (player_id, name, created_at, last_played)
+                INSERT INTO players (player_id, player_name, created_at, last_played)
                 VALUES (%s, %s, NOW(), NOW())
-            """, (player_id, name))
+            """, (player_id, player_name))
             
             # Initialize player inventory with starter items
             cursor.execute("""

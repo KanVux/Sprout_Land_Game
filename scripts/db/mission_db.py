@@ -48,7 +48,8 @@ class MissionDatabase:
                      FROM player_missions AS pm 
                      JOIN missions AS m ON pm.mission_id = m.mission_id 
                      WHERE player_id = %s"""
-            cursor.execute(sql, (player_id,))
+            player_id_str = str(player_id)  # Chuyển đổi player_id thành chuỗi
+            cursor.execute(sql, (player_id_str,))
             result = cursor.fetchall()
             return result
         except Error as e:
@@ -79,7 +80,7 @@ class MissionDatabase:
                 ON DUPLICATE KEY UPDATE status = %s, progress = %s, date_assigned = %s
                 """
             params = (
-                player_id,
+                str(player_id),
                 mission_data['mission_id'],
                 mission_data['status'],
                 mission_data['progress'],

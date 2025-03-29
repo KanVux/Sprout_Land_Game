@@ -104,7 +104,7 @@ class InventoryDatabase:
                 FROM inventory inv
                 JOIN items i ON inv.item_id = i.item_id
                 WHERE inv.player_id = %s order by inv.slot_number
-            """, (player_id,))
+            """, (str(player_id),))
             
             inventory_data = cursor.fetchall()
             return Inventory(inventory_data)
@@ -128,7 +128,7 @@ class InventoryDatabase:
         # Add delete operation
         operations.append((
             "DELETE FROM inventory WHERE player_id = %s",
-            (player_id,)
+            (str(player_id),)
         ))
         
         # Add insert operations
@@ -137,7 +137,7 @@ class InventoryDatabase:
                 operations.append((
                     """INSERT INTO inventory (player_id, item_id, quantity, slot_number)
                        VALUES (%s, %s, %s, %s)""",
-                    (player_id, item.item_id, item.quantity, index)
+                    (str(player_id), item.item_id, item.quantity, index)
                 ))
         # Execute all operations in single transaction
         return db.execute_transaction(operations)
