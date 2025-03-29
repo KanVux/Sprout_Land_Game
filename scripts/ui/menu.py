@@ -951,9 +951,9 @@ class CharacterSelectUI:
         
         # Load hình ảnh nút
         button_path = f'{GRAPHICS_PATH}/ui/button/'
-        self.new_btn_img = pygame.image.load(f'{button_path}mute_button_off.png').convert_alpha()
-        self.select_btn_img = pygame.image.load(f'{button_path}mute_button_off.png').convert_alpha() 
-        self.back_btn_img = pygame.image.load(f'{button_path}mute_button_off.png').convert_alpha()
+        self.new_btn_img = pygame.image.load(f'{button_path}new_button.png').convert_alpha()
+        self.select_btn_img = pygame.image.load(f'{button_path}select_button.png').convert_alpha() 
+        self.back_btn_img = pygame.image.load(f'{button_path}back_button.png').convert_alpha()
         self.delete_btn_img = pygame.image.load(f'{button_path}mute_button_off.png').convert_alpha()
         
         # Tạo nút
@@ -982,7 +982,7 @@ class CharacterSelectUI:
         self.preview_animation_timer = 0
         
         # Kích thước khung xem trước
-        self.preview_size = (100, 100)
+        self.preview_size = (120, 120)
         
     def toggle_creation_mode(self):
         """Chuyển đổi giữa chế độ chọn và tạo nhân vật"""
@@ -1040,7 +1040,7 @@ class CharacterSelectUI:
             if character_data:
                 # Giả sử có một đường dẫn avatar hoặc sprite sheet trong dữ liệu nhân vật
                 # Hoặc sử dụng một sprite sheet mặc định
-                character_sprites = import_folder(f'{GRAPHICS_PATH}/characters/player')
+                character_sprites = pygame.image.load(f"{GRAPHICS_PATH}/character/bonnie.png").convert_alpha()
                 if character_sprites:
                     self.preview_frames = character_sprites
                     self.preview_character = character_id
@@ -1217,7 +1217,7 @@ class CharacterSelectUI:
         self.display_surface.blit(overlay, (0, 0))
         
         # Vẽ tiêu đề
-        title = self.title_font.render("Chọn Nhân Vật", True, (240, 230, 140))
+        title = self.title_font.render("World Selection", True, (240, 230, 140))
         title_rect = title.get_rect(center=(SCREEN_WIDTH//2, 70))
         self.display_surface.blit(title, title_rect)
         
@@ -1239,7 +1239,7 @@ class CharacterSelectUI:
         """Vẽ giao diện chọn nhân vật"""
         # Vẽ hướng dẫn
         if not self.characters:
-            no_chars = self.font.render("Không tìm thấy nhân vật. Hãy tạo mới!", True, (200, 200, 200))
+            no_chars = self.font.render("Can't find your world, create one!", True, (200, 200, 200))
             no_chars_rect = no_chars.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
             self.display_surface.blit(no_chars, no_chars_rect)
             return
@@ -1262,11 +1262,11 @@ class CharacterSelectUI:
             
             # Vẽ hình ảnh xem trước được căn giữa
             scaled_preview = pygame.transform.scale(preview_image, (120, 120))
-            preview_img_rect = scaled_preview.get_rect(center=preview_rect.center)
-            self.display_surface.blit(scaled_preview, preview_img_rect)
+            # preview_img_rect = scaled_preview.get_rect(center=preview_rect.center)
+            # self.display_surface.blit(scaled_preview, preview_img_rect)
             
             # Vẽ tiêu đề xem trước
-            preview_title = self.font.render("Xem trước", True, (220, 220, 220))
+            preview_title = self.font.render("Preview", True, (220, 220, 220))
             preview_title_rect = preview_title.get_rect(midbottom=(preview_rect.centerx, preview_rect.top - 10))
             self.display_surface.blit(preview_title, preview_title_rect)
             
@@ -1275,7 +1275,7 @@ class CharacterSelectUI:
                 char = self.characters[self.selected_index]
                 char_details = [
                     f"ID: {char['player_id'][:8]}...",
-                    f"Lần chơi: {char.get('last_played', 'Chưa chơi')}",
+                    f"Last played: {char.get('last_played', 'Chưa chơi')}",
                 ]
                 
                 detail_y = preview_rect.bottom + 20
@@ -1300,12 +1300,12 @@ class CharacterSelectUI:
             pygame.draw.rect(self.display_surface, (140, 140, 160), card_rect, 2, 10)
             
             # Vẽ tên nhân vật
-            name_text = self.font.render(char['name'], True, (255, 255, 255))
+            name_text = self.font.render(char['player_name'], True, (255, 255, 255))
             self.display_surface.blit(name_text, (card_rect.x + 20, card_rect.y + 15))
             
             # Vẽ thông tin nhân vật
-            last_played = char.get('last_played', 'Chưa chơi')
-            info_text = self.font.render(f"Lần chơi cuối: {last_played}", True, (200, 200, 200))
+            last_played = char.get('last_played', 'Not played yet')
+            info_text = self.font.render(f"Last played: {last_played}", True, (200, 200, 200))
             self.display_surface.blit(info_text, (card_rect.x + 20, card_rect.y + 55))
             
             # Vẽ nút xóa
@@ -1317,7 +1317,7 @@ class CharacterSelectUI:
             
             # Vẽ xem trước nhân vật nếu được chọn
             if idx == self.selected_index and self.preview_frames:
-                preview_rect = pygame.Rect(card_rect.right + 20, card_rect.top + 10, *self.preview_size)
+                preview_rect = pygame.Rect(preview_rect.left + 15, preview_rect.top + 15, *self.preview_size)
                 preview_frame = self.preview_frames[self.preview_frame_index]
                 scaled_preview = pygame.transform.scale(preview_frame, self.preview_size)
                 self.display_surface.blit(scaled_preview, preview_rect)
@@ -1339,7 +1339,7 @@ class CharacterSelectUI:
     def draw_creation_ui(self):
         """Vẽ giao diện tạo nhân vật"""
         # Vẽ hướng dẫn
-        instruction = self.header_font.render("Nhập Tên Nhân Vật:", True, (220, 220, 220))
+        instruction = self.header_font.render("Enter player name:", True, (220, 220, 220))
         instruction_rect = instruction.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2 - 60))
         self.display_surface.blit(instruction, instruction_rect)
         
@@ -1388,11 +1388,11 @@ class CharacterSelectUI:
         pygame.draw.rect(self.display_surface, (120, 120, 140), confirm_rect, 3, 15)
         
         # Vẽ tiêu đề và nội dung
-        title = self.header_font.render("Xác nhận xóa", True, (220, 220, 100))
+        title = self.header_font.render("Delete Confirmation", True, (220, 220, 100))
         title_rect = title.get_rect(center=(SCREEN_WIDTH//2, confirm_rect.top + 40))
         self.display_surface.blit(title, title_rect)
         
-        message = self.font.render(f"Bạn có chắc muốn xóa '{char_name}'?", True, (220, 220, 220))
+        message = self.font.render(f"Do you want to delete '{char_name}'?", True, (220, 220, 220))
         message_rect = message.get_rect(center=(SCREEN_WIDTH//2, confirm_rect.top + 90))
         self.display_surface.blit(message, message_rect)
         
@@ -1413,8 +1413,8 @@ class CharacterSelectUI:
         pygame.draw.rect(self.display_surface, no_color, no_button_rect, 0, 5)
         
         # Vẽ chữ trên nút
-        yes_text = self.font.render("Xóa", True, (255, 255, 255))
-        no_text = self.font.render("Hủy", True, (255, 255, 255))
+        yes_text = self.font.render("Delete", True, (255, 255, 255))
+        no_text = self.font.render("Cancle", True, (255, 255, 255))
         
         yes_text_rect = yes_text.get_rect(center=yes_button_rect.center)
         no_text_rect = no_text.get_rect(center=no_button_rect.center)
