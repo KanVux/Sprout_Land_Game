@@ -47,13 +47,13 @@ class MainMenu:
 			pygame.quit()
 			sys.exit()
 
-		self.start_image = pygame.image.load(f'{GRAPHICS_PATH}/ui/start_btn.png').convert_alpha()
-		self.settings_image = pygame.image.load(f'{GRAPHICS_PATH}/ui/settings_btn.png').convert_alpha()
-		self.exit_image = pygame.image.load(f'{GRAPHICS_PATH}/ui/exit_btn.png').convert_alpha()
+		self.start_image = pygame.image.load(f'{GRAPHICS_PATH}/ui/button/play_button.png').convert_alpha()
+		self.settings_image = pygame.image.load(f'{GRAPHICS_PATH}/ui/button/settings_button.png').convert_alpha()
+		self.exit_image = pygame.image.load(f'{GRAPHICS_PATH}/ui/button/exit_button.png').convert_alpha()
 
-		self.start_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 65, self.start_image, 2, start_game)
-		self.settings_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, self.settings_image, 2,  open_settings)
-		self.exit_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 120, self.exit_image, 2,  exit_game)
+		self.start_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 65, self.start_image, 2.3, start_game)
+		self.settings_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, self.settings_image, 2.3,  open_settings)
+		self.exit_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 120, self.exit_image, 2.3,  exit_game)
 
 		self.show_character_select = False  # Thêm thuộc tính này
 
@@ -976,7 +976,7 @@ class CharacterSelectUI:
 
         # Thêm biến cho xem trước nhân vật
         self.preview_character = None
-        self.preview_frames = []
+        self.avatar = []
         self.preview_frame_index = 0
         self.preview_animation_speed = 0.15
         self.preview_animation_timer = 0
@@ -1030,19 +1030,14 @@ class CharacterSelectUI:
         # Giả định rằng bạn có đường dẫn đến sprite sheet cho nhân vật
         # Đây chỉ là một ví dụ, cần điều chỉnh cho phù hợp với cấu trúc dự án của bạn
         try:
-            # Dọn dẹp preview trước
-            self.preview_frames = []
-            self.preview_frame_index = 0
-            self.preview_animation_timer = 0
-            
             # Cố gắng tải hình ảnh xem trước
-            character_data = PlayerDatabase.get_player(character_id)
+            character_data = PlayerDatabase.get_player_info(character_id)
             if character_data:
                 # Giả sử có một đường dẫn avatar hoặc sprite sheet trong dữ liệu nhân vật
                 # Hoặc sử dụng một sprite sheet mặc định
                 character_sprites = pygame.image.load(f"{GRAPHICS_PATH}/character/bonnie.png").convert_alpha()
                 if character_sprites:
-                    self.preview_frames = character_sprites
+                    self.avatar = character_sprites
                     self.preview_character = character_id
                     return True
         except Exception as e:
@@ -1051,18 +1046,10 @@ class CharacterSelectUI:
         # Nếu không thể tải, sử dụng một hình ảnh giữ chỗ
         fallback_image = pygame.Surface(self.preview_size)
         fallback_image.fill((100, 100, 150))
-        self.preview_frames = [fallback_image]
+        self.avatar = [fallback_image]
         return False
         
-    def update_preview_animation(self, dt):
-        """Cập nhật hoạt ảnh xem trước nhân vật"""
-        if not self.preview_frames:
-            return
-            
-        self.preview_animation_timer += dt
-        if self.preview_animation_timer >= self.preview_animation_speed:
-            self.preview_frame_index = (self.preview_frame_index + 1) % len(self.preview_frames)
-            self.preview_animation_timer = 0
+
 
     def handle_event(self, event):
         """Xử lý sự kiện đầu vào"""
@@ -1204,7 +1191,6 @@ class CharacterSelectUI:
             char_id = self.characters[self.selected_index]['player_id']
             if self.preview_character != char_id:
                 self.load_character_preview(char_id)
-            self.update_preview_animation(dt)
         
     def draw(self):
         """Vẽ giao diện chọn nhân vật"""
@@ -1246,8 +1232,8 @@ class CharacterSelectUI:
         
         # Vẽ xem trước nhân vật được chọn
         if (self.selected_index >= 0 and self.selected_index < len(self.characters) and 
-            self.preview_frames and not self.showing_delete_confirm):
-            preview_image = self.preview_frames[self.preview_frame_index]
+            self.avatar and not self.showing_delete_confirm):
+            preview_image = self.avatar
             # Đặt khung xem trước ở bên phải danh sách nhân vật
             preview_rect = pygame.Rect(
                 SCREEN_WIDTH//2 + self.card_width//2 + 50,
@@ -1316,10 +1302,10 @@ class CharacterSelectUI:
                            (delete_rect.right - 5, delete_rect.centery), 2)
             
             # Vẽ xem trước nhân vật nếu được chọn
-            if idx == self.selected_index and self.preview_frames:
+            if idx == self.selected_index and self.avatar:
                 preview_rect = pygame.Rect(preview_rect.left + 15, preview_rect.top + 15, *self.preview_size)
-                preview_frame = self.preview_frames[self.preview_frame_index]
-                scaled_preview = pygame.transform.scale(preview_frame, self.preview_size)
+                preview_avatar = self.avatar
+                scaled_preview = pygame.transform.scale(preview_avatar, self.preview_size)
                 self.display_surface.blit(scaled_preview, preview_rect)
         
         # Vẽ chỉ báo cuộn nếu cần

@@ -9,7 +9,6 @@ class PlayerData:
     def __init__(self, player_data):
         self.player_id = player_data['player_id']
         self.name = player_data['player_name']
-        self.money = player_data['money']
 
 class PlayerDatabase:
     @staticmethod
@@ -146,7 +145,6 @@ class PlayerDatabase:
                         game_state['position_x'],
                         game_state['position_y']
                     ),
-                    'money': game_state.get('money', 200),
                     'game_time': game_state['game_time'],
                 },
                 'level': {
@@ -180,8 +178,7 @@ class PlayerDatabase:
                 
             cursor = connection.cursor(dictionary=True)
             cursor.execute("""
-                SELECT player_id, player_name, created_at, last_played, 
-                       COALESCE((SELECT quantity FROM inventory WHERE player_id = players.player_id AND item_id = 17), 0) as money
+                SELECT player_id, player_name, created_at, last_played
                 FROM players
                 ORDER BY last_played DESC
             """)
