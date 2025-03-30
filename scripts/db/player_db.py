@@ -180,6 +180,7 @@ class PlayerDatabase:
             cursor.execute("""
                 SELECT player_id, player_name, created_at, last_played
                 FROM players
+                WHERE player_id <> '1'
                 ORDER BY last_played DESC
             """)
             

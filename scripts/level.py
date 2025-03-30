@@ -25,7 +25,7 @@ class Level:
 	def __init__(self, player_id=None):
 		# Get the display surface
 		self.display_surface = pygame.display.get_surface()
-
+		pygame.mixer.init()
 		 # Dừng nhạc nền hiện tại nếu có
 		pygame.mixer.stop()
 
@@ -147,7 +147,7 @@ class Level:
 			)
 
 		# Water
-		water_frames = import_folder(f'{GRAPHICS_PATH}/water') 
+		water_frames = import_folder(f'{GRAPHICS_PATH}/world/water') 
 		for x, y, surface in tmx_data.get_layer_by_name('Water').tiles():
 			Water((x * TILE_SIZE, y * TILE_SIZE),
 				water_frames, 
@@ -486,6 +486,7 @@ class Level:
 	def cleanup(self):
 		"""Dọn dẹp tài nguyên khi Level bị hủy"""
 		# Dừng nhạc nền
+		pygame.mixer.init()	
 		background_music.stop()
 		
 		# Xóa tất cả sprite để giải phóng bộ nhớ

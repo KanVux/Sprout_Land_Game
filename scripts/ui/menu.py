@@ -12,6 +12,10 @@ import copy
 from settings import set_global_volume  # existing imports
 import time
 
+big_button_path = f"{GRAPHICS_PATH}/ui/button/90x27"
+medium_button_path = f"{GRAPHICS_PATH}/ui/button/66x21"
+small_button_path = f"{GRAPHICS_PATH}/ui/button/22x24"
+
 class MainMenu:
 	def __init__(self, screen):
 		self.screen = screen
@@ -47,9 +51,9 @@ class MainMenu:
 			pygame.quit()
 			sys.exit()
 
-		self.start_image = pygame.image.load(f'{GRAPHICS_PATH}/ui/button/play_button.png').convert_alpha()
-		self.settings_image = pygame.image.load(f'{GRAPHICS_PATH}/ui/button/settings_button.png').convert_alpha()
-		self.exit_image = pygame.image.load(f'{GRAPHICS_PATH}/ui/button/exit_button.png').convert_alpha()
+		self.start_image = pygame.image.load(f'{big_button_path}/play_button.png').convert_alpha()
+		self.settings_image = pygame.image.load(f'{big_button_path}/settings_button.png').convert_alpha()
+		self.exit_image = pygame.image.load(f'{big_button_path}/exit_button.png').convert_alpha()
 
 		self.start_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 65, self.start_image, 2.3, start_game)
 		self.settings_button = Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, self.settings_image, 2.3,  open_settings)
@@ -120,8 +124,8 @@ class PauseMenu:
 		self.pause_rect = self.pause_bg.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
 
 		# Load button images
-		self.resume_image = pygame.image.load(f'{GRAPHICS_PATH}/ui/button/resume_button.png').convert_alpha()
-		self.exit_to_home_image = pygame.image.load(f'{GRAPHICS_PATH}/ui/button/home_button.png').convert_alpha()
+		self.resume_image = pygame.image.load(f'{big_button_path}/resume_button.png').convert_alpha()
+		self.exit_to_home_image = pygame.image.load(f'{big_button_path}/home_button.png').convert_alpha()
 
 		# Create buttons with timers
 		self.resume_button = Button(
@@ -661,18 +665,18 @@ class SettingsMenu:
 		)
 		)
 		# Create the Back button (used to exit settings)
-		self.back_surf = pygame.image.load(f"{GRAPHICS_PATH}/ui/button/exit_button_off.png").convert_alpha()
+		self.back_surf = pygame.image.load(f"{small_button_path}/exit_button_off.png").convert_alpha()
 		self.back_surf_scaled = pygame.transform.scale_by(self.back_surf, 1.6)
 		self.back_button = Button(80, SCREEN_HEIGHT - 75, self.back_surf_scaled, 1.5, self.exit_settings)
 
 		# Setup volume control buttons (code omitted for brevity)
 		# Nút tăng âm lượng 
-		self.volume_up_button_off_surf = pygame.image.load(f'{GRAPHICS_PATH}/ui/button/volume_up_button_off.png')
-		self.volume_up_button_on_surf = pygame.image.load(f'{GRAPHICS_PATH}/ui/button/volume_up_button_on.png')
+		self.volume_up_button_off_surf = pygame.image.load(f'{small_button_path}/volume_up_button_off.png')
+		self.volume_up_button_on_surf = pygame.image.load(f'{small_button_path}/volume_up_button_on.png')
 		
 		# Nút giảm âm lượng
-		self.volume_down_button_off_surf = pygame.image.load(f'{GRAPHICS_PATH}/ui/button/volume_down_button_off.png')
-		self.volume_down_button_on_surf = pygame.image.load(f'{GRAPHICS_PATH}/ui/button/volume_down_button_on.png')
+		self.volume_down_button_off_surf = pygame.image.load(f'{small_button_path}/volume_down_button_off.png')
+		self.volume_down_button_on_surf = pygame.image.load(f'{small_button_path}/volume_down_button_on.png')
 		
 		self.volume_up_surf_off = pygame.transform.scale_by(self.volume_up_button_off_surf, 1.6)
 		self.volume_down_surf_off = pygame.transform.scale_by(self.volume_down_button_off_surf, 1.6)
@@ -682,8 +686,8 @@ class SettingsMenu:
 		
 		# Nút tắt âm lượng
 		# Vẽ trạng thái mute
-		self.mute_surf_on = pygame.image.load(f'{GRAPHICS_PATH}/ui/button/mute_button_on.png')
-		self.mute_surf_off = pygame.image.load(f'{GRAPHICS_PATH}/ui/button/mute_button_off.png')
+		self.mute_surf_on = pygame.image.load(f'{small_button_path}/mute_button_on.png')
+		self.mute_surf_off = pygame.image.load(f'{small_button_path}/mute_button_off.png')
 		
 		self.mute_surf_on = pygame.transform.scale_by(self.mute_surf_on, 1.6)
 		self.mute_surf_off = pygame.transform.scale_by(self.mute_surf_off, 1.6)
@@ -951,11 +955,10 @@ class CharacterSelectUI:
 		self.bg_color = (20, 20, 30, 240)
 		
 		# Load hình ảnh nút
-		button_path = f'{GRAPHICS_PATH}/ui/button/'
-		self.new_btn_img = pygame.image.load(f'{button_path}new_button.png').convert_alpha()
-		self.select_btn_img = pygame.image.load(f'{button_path}select_button.png').convert_alpha() 
-		self.back_btn_img = pygame.image.load(f'{button_path}back_button.png').convert_alpha()
-		self.delete_btn_img = pygame.image.load(f'{button_path}delete_button.png').convert_alpha()
+		self.new_btn_img = pygame.image.load(f'{medium_button_path}/new_button.png').convert_alpha()
+		self.select_btn_img = pygame.image.load(f'{medium_button_path}/select_button.png').convert_alpha() 
+		self.back_btn_img = pygame.image.load(f'{medium_button_path}/back_button.png').convert_alpha()
+		self.delete_btn_img = pygame.image.load(f'{small_button_path}/delete_button.png').convert_alpha()
 		self.delete_btn_img = pygame.transform.scale(self.delete_btn_img, (30, 30))
 		
 		# Tạo nút

@@ -26,8 +26,8 @@ class Drop(Generic):
 class Rain:
     def __init__(self, all_sprites):
         self.all_sprites = all_sprites
-        self.rain_drops = import_folder(f'{GRAPHICS_PATH}/rain/drops/')
-        self.rain_floor = import_folder(f'{GRAPHICS_PATH}/rain/floor/')
+        self.rain_drops = import_folder(f'{GRAPHICS_PATH}/world/rain/drops/')
+        self.rain_floor = import_folder(f'{GRAPHICS_PATH}/world/rain/floor/')
 
         self.floor_w, self.floor_h = pygame.image.load(f'{GRAPHICS_PATH}/world/ground.png').get_size()
 

@@ -75,7 +75,7 @@ class MissionUI:
         }
         
         # Reward icon
-        self.reward_icon = pygame.image.load(f"{GRAPHICS_PATH}/ui/money.png").convert_alpha() if pygame.image.get_extended() else None
+        self.reward_icon = pygame.image.load(f"{GRAPHICS_PATH}/items/coins.png").convert_alpha() if pygame.image.get_extended() else None
         if self.reward_icon:
             self.reward_icon = pygame.transform.scale(self.reward_icon, (20, 20))
         

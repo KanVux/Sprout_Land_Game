@@ -11,9 +11,10 @@ from scripts.ui.mission_ui import MissionUI
 class Game:
 	def __init__(self):
 		pygame.init()
-
+		
 		self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 		pygame.display.set_caption('Sprout Land')
+		
 		set_global_volume(global_volume)
 		# pygame.mouse.set_visible(False)
 		self.cursor_img = pygame.image.load(f"{GRAPHICS_PATH}/mouse/Triangle Mouse icon 1.png").convert_alpha()

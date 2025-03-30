@@ -107,7 +107,7 @@ class Tree(pygame.sprite.Sprite):
 		
 		self.max_health = self.health
 		self.tree_alive = True
-		stump_path = f'{GRAPHICS_PATH}/stumps/{"small" if self.name == "Small" else "large"}.png'
+		stump_path = f'{GRAPHICS_PATH}/world/stumps/{"small" if self.name == "Small" else "large"}.png'
 		self.stump_surf = pygame.image.load(stump_path)
 		
 		# Initialize apple attributes
@@ -358,7 +358,7 @@ class Tree(pygame.sprite.Sprite):
 					apples_created += 1
 
 	def plant_tree_at(position, num_apple, health, groups, tree_name, player_add):
-		tree_image = pygame.image.load(f"{GRAPHICS_PATH}/objects/tree_{tree_name.lower()}.png").convert_alpha()
+		tree_image = pygame.image.load(f"{GRAPHICS_PATH}/world/objects/tree_{tree_name.lower()}.png").convert_alpha()
 		tree = Tree(
 			pos=position,
 			surf=tree_image,
