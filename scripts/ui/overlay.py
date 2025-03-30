@@ -232,8 +232,12 @@ class Dialog:
         
         # Tải tài nguyên giao diện hội thoại
         self.dialog_bg_surface = pygame.image.load(f'{GRAPHICS_PATH}/ui/dialog/dialog_bg.png').convert_alpha()
-        self.dialog_text_surface = pygame.image.load(f'{GRAPHICS_PATH}/ui/dialog/dialog_text_box.png').convert_alpha()
         self.dialog_avatar_frame_surface = pygame.image.load(f'{GRAPHICS_PATH}/ui/dialog/dialog_avata_frame.png').convert_alpha()
+        
+        self.dialog_text_surface_top = pygame.image.load(f'{GRAPHICS_PATH}/ui/dialog/dialog_text_box_top.png').convert_alpha()
+        self.dialog_text_surface = pygame.image.load(f'{GRAPHICS_PATH}/ui/dialog/dialog_text_box.png').convert_alpha()
+        self.dialog_text_surface_bottom = pygame.image.load(f'{GRAPHICS_PATH}/ui/dialog/dialog_text_box_bottom.png').convert_alpha()
+        self.dialog_text_surface_arrow = pygame.image.load(f'{GRAPHICS_PATH}/ui/dialog/dialog_text_box_arrow.png').convert_alpha()
         
         # Kiểu hội thoại dựa trên loại NPC
         self.npc_type = npc_type
@@ -250,12 +254,12 @@ class Dialog:
         # Thông số đáp ứng - điều chỉnh dựa trên kích thước màn hình
         self.base_width = min(500 * self.scale_factor, SCREEN_WIDTH * 0.8)  # Tối đa 80% chiều rộng màn hình
         self.text_box_width = min(250 * self.scale_factor, self.base_width * 0.6)
-        self.min_height = min(150 * self.scale_factor, SCREEN_HEIGHT * 0.2)
+        self.min_height = min(100 * self.scale_factor, SCREEN_HEIGHT * 0.2)
         
         # Vị trí - có thể tùy chỉnh
         self.position = "bottom"  # "top", "center", "bottom"
         self.dialog_bg_rect = self._calculate_dialog_position()
-        self.dialog_text_rect = pygame.Rect(0, 0, self.text_box_width, self.min_height)
+        self.dialog_text_rect_center = pygame.Rect(0, 0, self.text_box_width, self.min_height)
         
         # Thông số văn bản
         self.text_color = self.style['text_color']
@@ -272,8 +276,8 @@ class Dialog:
         
         # Đệm đáp ứng
         self.padding = {
-            'text': int(30 * self.scale_factor),
-            'box': int(20 * self.scale_factor),
+            'text': int(20 * self.scale_factor),
+            'box': int(30 * self.scale_factor),
         }
         
         # Hỗ trợ chuỗi hội thoại
@@ -285,15 +289,8 @@ class Dialog:
         self.choices = []
         self.selected_choice = 0
         self.in_choice_mode = False
-        
-        # Hiệu ứng âm thanh
-        self.char_sound = None
-        try:
-            self.char_sound = pygame.mixer.Sound(f'{SOUND_PATH}/ui/dialog_char.wav')
-            self.char_sound.set_volume(0.2)
-        except:
-            pass
-            
+
+
         # Hỗ trợ kéo hội thoại
         self.dragging = False
         self.drag_offset = (0, 0)
@@ -450,11 +447,11 @@ class Dialog:
                 # Kiểm tra nếu nhấp vào lựa chọn
                 if self.in_choice_mode and self.is_text_complete:
                     choice_height = self.font.get_linesize()
-                    choice_area_y = self.dialog_text_rect.top + self.padding['text'] + self.calculate_text_dimensions(self.current_text) + 20
+                    choice_area_y = self.dialog_text_rect_center.top + self.padding['text'] + self.calculate_text_dimensions(self.current_text) + 20
                     
                     for i, choice in enumerate(self.choices):
                         choice_rect = pygame.Rect(
-                            self.dialog_text_rect.left + self.padding['text'],
+                            self.dialog_text_rect_center.left + self.padding['text'],
                             choice_area_y + i * choice_height,
                             self.text_box_width - (self.padding['text'] * 2),
                             choice_height
@@ -550,7 +547,7 @@ class Dialog:
                     self.avatar_bounce_dir *= -1
                     
         # Hoạt ảnh văn bản
-        if not self.is_text_complete:
+        if not self.is_text_complete:           
             self.animation_timer += dt
             if self.animation_timer >= self.animation_speed:
                 self.animation_timer = 0
@@ -575,8 +572,9 @@ class Dialog:
                         self.text_index += 1
                         
                         # Phát âm thanh gõ mỗi 4 ký tự
-                        if self.char_sound and self.text_index % 4 == 0:
-                            self.char_sound.play()
+                        if self.text_index % 6 == 0:
+                            char_sound.set_volume(0.2)
+                            char_sound.play()
                 else:
                     self.is_text_complete = True
                     self.next_indicator_visible = True
@@ -661,7 +659,15 @@ class Dialog:
             self.dialog_text_surface,
             (int(self.text_box_width), int(text_box_height))
         )
-        
+        text_box_surface_top = pygame.transform.scale(
+            self.dialog_text_surface_top,
+            (int(self.text_box_width), self.dialog_text_surface_top.get_height() + 10)
+        )
+        text_box_surface_bottom = pygame.transform.scale(
+            self.dialog_text_surface_bottom,
+            (int(self.text_box_width), self.dialog_text_surface_bottom.get_height() + 10)
+        )
+
         # Đặt vị trí hộp văn bản tương đối với nền hội thoại
         avatar_width = 0
         if self.avatar_surface:
@@ -669,11 +675,14 @@ class Dialog:
             avatar_width = self.dialog_bg_rect.width * 0.25
         
         # Đặt hộp văn bản bên phải avatar nếu có
-        self.dialog_text_rect = text_box_surface.get_rect(
-            midleft=(self.dialog_bg_rect.left + avatar_width + 20 * self.scale_factor,
+        self.dialog_text_rect_center = text_box_surface.get_rect(
+            midleft=(self.dialog_bg_rect.left + avatar_width + 70 * self.scale_factor,
                    self.dialog_bg_rect.centery)
         )
-
+        text_box_surface_arrow = pygame.transform.scale(
+            self.dialog_text_surface_arrow,
+            (20, 30)
+        )
         # Vẽ nền hội thoại với kiểu tùy chỉnh hoặc hình ảnh
         if self.npc_type:
             self.screen.blit(bg_surface, self.dialog_bg_rect)
@@ -681,8 +690,10 @@ class Dialog:
             self.screen.blit(scaled_bg, self.dialog_bg_rect)
         
         # Vẽ hộp văn bản
-        self.screen.blit(text_box_surface, self.dialog_text_rect)
-
+        self.screen.blit(text_box_surface, self.dialog_text_rect_center)
+        self.screen.blit(text_box_surface_top,(self.dialog_text_rect_center.left, self.dialog_text_rect_center.top - 10))
+        self.screen.blit(text_box_surface_bottom, (self.dialog_text_rect_center.left, self.dialog_text_rect_center.bottom - 8))
+        self.screen.blit(text_box_surface_arrow, (self.dialog_text_rect_center.left - text_box_surface_arrow.get_width() + 11, self.dialog_text_rect_center.centery))
         # Vẽ avatar nếu có
         if self.avatar_surface:
             # Tính kích thước avatar tối ưu dựa trên kích thước hội thoại
@@ -745,7 +756,7 @@ class Dialog:
             name_x = self.avatar_center_x - name_surface.get_width() / 2  # Căn giữa trên avatar
             name_y = self.avatar_rect.top - 30 * self.scale_factor  # Đặt cao hơn trên avatar
         else:
-            name_x = self.dialog_text_rect.left
+            name_x = self.dialog_text_rect_center.left
             name_y = self.dialog_bg_rect.top + self.padding['box'] * 0.5
 
         # Vẽ nền tên để hiển thị tốt hơn
@@ -764,8 +775,8 @@ class Dialog:
 
         # Vẽ văn bản với ngắt dòng
         text_area_width = self.text_box_width - (self.padding['text'] * 2)
-        text_start_x = self.dialog_text_rect.left + self.padding['text']
-        text_start_y = self.dialog_text_rect.top + self.padding['text']
+        text_start_x = self.dialog_text_rect_center.left + self.padding['text']
+        text_start_y = self.dialog_text_rect_center.top + self.padding['text']
         
         # Vẽ văn bản thông thường
         self.render_text(self.current_text, text_start_x, text_start_y, text_area_width)
@@ -797,8 +808,8 @@ class Dialog:
         if self.next_indicator_visible and not self.in_choice_mode:
             # Sử dụng chỉ báo nhỏ hơn
             indicator_size = int(12 * self.scale_factor)  # Giảm từ 20 xuống 12
-            next_x = self.dialog_text_rect.right - self.padding['text']
-            next_y = self.dialog_text_rect.bottom - self.padding['text']
+            next_x = self.dialog_text_rect_center.right - self.padding['text']
+            next_y = self.dialog_text_rect_center.bottom - self.padding['text']
             
             # Vẽ mũi tên nhấp nháy
             pulse = 0.7 + 0.3 * (1 if self.next_indicator_visible else 0)  # Nhịp đập giữa 0.7 và 1.0

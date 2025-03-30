@@ -144,7 +144,8 @@ chopping_sound =  pygame.mixer.Sound(f'{AUDIO_PATH}/axe.mp3')
 tilt_sound = pygame.mixer.Sound(f'{AUDIO_PATH}/hoe.wav')
 watering_sound =  pygame.mixer.Sound(f'{AUDIO_PATH}/water.mp3')
 plant_seed_sound = pygame.mixer.Sound(f'{AUDIO_PATH}/plant.wav')
-
+char_sound = pygame.mixer.Sound(f'{AUDIO_PATH}/dialog_char.mp3')
+            
 sounds = [
 		background_music,
 		collect_item_sound,
