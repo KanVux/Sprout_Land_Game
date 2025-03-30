@@ -17,16 +17,10 @@ class Game:
 		
 		set_global_volume(global_volume)
 		# pygame.mouse.set_visible(False)
-		self.cursor_img = pygame.image.load(f"{GRAPHICS_PATH}/mouse/Triangle Mouse icon 1.png").convert_alpha()
-		cursor_width = self.cursor_img.get_width()
-		cursor_height = self.cursor_img.get_height()
-		scale_factor = 2 
-		self.cursor_img_scaled = pygame.transform.scale(
-			self.cursor_img,
-			(int(cursor_width * scale_factor),
-			int(cursor_height * scale_factor))
-		)
-		self.cursor_rect = self.cursor_img_scaled.get_rect()
+		self.default_cursor_img = pygame.image.load(f"{GRAPHICS_PATH}/mouse/Triangle Mouse icon 1.png").convert_alpha()	
+		self.point_cursor_img = pygame.image.load(f"{GRAPHICS_PATH}/mouse/Catpaw pointing Mouse icon.png").convert_alpha()
+		self.hold_cursor_img = pygame.image.load(f"{GRAPHICS_PATH}/mouse/Catpaw holding Mouse icon.png").convert_alpha()
+	
 		self.clock = pygame.time.Clock()
 
 		self.player_id = None  # Lưu ID người chơi hiện tại
@@ -69,8 +63,15 @@ class Game:
 
 			# Handle cursor position
 			mouse_pos = pygame.mouse.get_pos()
+			if self.level.player.inventory_ui.dragging:
+				self.cursor_img = self.hold_cursor_img
+			elif self.level.player.inventory_ui.hovering:
+				self.cursor_img = self.point_cursor_img
+			else:
+				self.cursor_img = self.default_cursor_img
+			self.cursor_rect = self.cursor_img.get_rect()
 			self.cursor_rect.center = mouse_pos
-
+			
 			# Clear screen
 			self.screen.fill('black')
 
@@ -100,7 +101,8 @@ class Game:
 			self.update_game_state(dt, mouse_pos, pygame.mouse.get_pressed()[0])
 
 			# Draw cursor and overlay FPS
-			self.screen.blit(self.cursor_img_scaled, self.cursor_rect)
+
+			self.screen.blit(self.cursor_img, self.cursor_rect)
 			if self.level.all_sprites.debug_mode:
 				fps_overlay.draw(self.screen, self.clock)
 			pygame.display.flip()
@@ -232,7 +234,7 @@ class Game:
 			self.mission_ui.draw(self.screen)
 
 		# Draw cursor last, after all other rendering
-		self.screen.blit(self.cursor_img_scaled, self.cursor_rect)
+		self.screen.blit(self.cursor_img, self.cursor_rect)
 		
 		# Single update per frame
 		pygame.display.flip()  # Use flip() instead of update()

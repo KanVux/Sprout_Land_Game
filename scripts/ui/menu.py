@@ -1328,7 +1328,7 @@ class CharacterSelectUI:
 	def draw_creation_ui(self):
 		"""Vẽ giao diện tạo nhân vật"""
 		# Vẽ hướng dẫn
-		instruction = self.header_font.render("Enter player name:", True, (220, 220, 220))
+		instruction = self.header_font.render("Enter world name:", True, (220, 220, 220))
 		instruction_rect = instruction.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2 - 60))
 		self.display_surface.blit(instruction, instruction_rect)
 		

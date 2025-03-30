@@ -30,6 +30,7 @@ class InventoryUI:
         self.y = (SCREEN_HEIGHT - self.height) // 2
         
         # Thiết lập kéo thả
+        self.hovering = False
         self.dragging = False
         self.dragged_item = None
         self.dragged_origin = None
@@ -308,11 +309,13 @@ class InventoryUI:
             if self.hovered_slot is not None and self.hovered_slot < len(self.player.inventory.items):
                 hovered_item = self.player.inventory.items[self.hovered_slot]
                 if hovered_item is not None:
+                    self.hovering = True
                     self.tooltip_timer += dt
                     if self.tooltip_timer > 0.7:  # Hiển thị tooltip sau 0.7 giây hover
                         self.show_tooltip = True
                         self.tooltip_item = hovered_item
             else:
+                self.hovering = False         
                 self.tooltip_timer = 0
         else:
             self.tooltip_timer = 0
@@ -398,12 +401,11 @@ class InventoryUI:
         
         # Hiển thị tooltip
         self.display_surface.blit(tooltip_surf, (tooltip_x, tooltip_y))
-    
+
     def draw(self):
         """Vẽ inventory UI"""
         if not self.active:
             return
-            
         # Tính toán hiệu ứng mở
         if self.opening:
             scale = self.open_progress
