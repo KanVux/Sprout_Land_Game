@@ -656,14 +656,6 @@ class SettingsMenu:
 			start_y_move += 50
 
 		self.cursor_img = pygame.image.load(f"{GRAPHICS_PATH}/mouse/Triangle Mouse icon 1.png").convert_alpha()
-		cursor_width = self.cursor_img.get_width()
-		cursor_height = self.cursor_img.get_height()
-		scale_factor = 2 
-		self.cursor_img_scaled = pygame.transform.scale(
-			self.cursor_img,
-			(int(cursor_width * scale_factor), (int(cursor_height * scale_factor))
-		)
-		)
 		# Create the Back button (used to exit settings)
 		self.back_surf = pygame.image.load(f"{small_button_path}/exit_button_off.png").convert_alpha()
 		self.back_surf_scaled = pygame.transform.scale_by(self.back_surf, 1.6)
@@ -872,7 +864,7 @@ class SettingsMenu:
 
 		self.back_button.update(mouse_pos)
 		self.back_button.draw(self.display_surface)
-		self.display_surface.blit(self.cursor_img_scaled, mouse_pos)
+		self.display_surface.blit(self.cursor_img, mouse_pos)
 		
 		# Optionally update global volume for sounds
 		set_global_volume(self.volume)
@@ -888,13 +880,6 @@ class ConfirmationPopup:
 		self.message_rect = self.message_surf.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50))
 
 		self.cursor_img = pygame.image.load(f"{GRAPHICS_PATH}/mouse/Triangle Mouse icon 1.png").convert_alpha()
-		cursor_width = self.cursor_img.get_width()
-		cursor_height = self.cursor_img.get_height()
-		scale_factor = 2 
-		self.cursor_img_scaled = pygame.transform.scale(
-			self.cursor_img,
-			(int(cursor_width * scale_factor), int(cursor_height * scale_factor))
-		)
 		# Create Yes and No buttons. Adjust image paths as needed.
 		yes_image = pygame.image.load(f'{GRAPHICS_PATH}/ui/confirm_popup/button_white_up.png').convert_alpha()
 		no_image = pygame.image.load(f'{GRAPHICS_PATH}/ui/confirm_popup/button_Orange_up.png').convert_alpha()
@@ -928,7 +913,7 @@ class ConfirmationPopup:
 		# Draw the Yes and No buttons
 		self.yes_button.draw(self.display_surface)
 		self.no_button.draw(self.display_surface)
-		self.display_surface.blit(self.cursor_img_scaled, mouse_pos)
+		self.display_surface.blit(self.cursor_img, mouse_pos)
 
 class CharacterSelectUI:
 	def __init__(self, display_surface, on_select_callback, on_cancel_callback):

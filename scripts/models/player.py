@@ -67,18 +67,18 @@ class Player(pygame.sprite.Sprite):
 
 		if self.inventory.get_item('coins') is None:
 			self.add_item(ItemDatabase.get_item_from_name('coins'), 0)
-		# Seeds
-		self.seeds = []
-		for seed in self.inventory.items:
-			if seed is not None and seed.item_name.endswith('seeds'):
-				self.seeds.append(seed.item_name.split(' ')[0])
 
-		if self.seeds:
-			self.seed_index = 0
-			self.selected_seed = self.seeds[self.seed_index]
+		self.hotbar = []
+		for index, item in enumerate(self.inventory.items):
+			if item is not None and index < 3 and item.item_name != 'coins':
+				self.hotbar.append(item.item_name)
+
+		if self.hotbar:
+			self.hotbar_index = 0
+			self.selected_item = self.hotbar[self.hotbar_index]
 		else:
-			self.seed_index = 0
-			self.selected_seed = None
+			self.hotbar_index = 0
+			self.selected_item = None
 		# Inventory UI
 		self.inventory_ui = InventoryUI(self)
 		
@@ -152,10 +152,10 @@ class Player(pygame.sprite.Sprite):
 		self.target_pos = self.rect.center + PLAYER_TOOL_OFFSET[self.status.split('_')[0]]
    
 	def use_seed(self):
-		seed_name = f'{self.selected_seed} seeds'
+		seed_name = f'{self.selected_item} seeds'
 		print(seed_name)
 		if self.has_item(seed_name):
-			if self.soil_layer.plant_seed(self.target_pos, self.selected_seed):
+			if self.soil_layer.plant_seed(self.target_pos, self.selected_item):
 				self.remove_item(seed_name, 1)
 				print(f'Used {seed_name}')
 				# Cập nhật nhiệm vụ
@@ -177,6 +177,17 @@ class Player(pygame.sprite.Sprite):
 		if self.frame_index >= len(self.animations[self.status]):
 			self.frame_index = 0
 		self.image = self.animations[self.status][int(self.frame_index)]
+
+	def update_hotbar(self):	
+		self.hotbar = []
+		for index, item in enumerate(self.inventory.items):
+			if item is not None and index < 3 and item.item_name != 'coins':
+				self.hotbar.append(item.item_name)
+
+		if self.hotbar:
+			self.selected_item = self.hotbar[self.hotbar_index]
+		else:
+			self.selected_item = None
 
 	def input(self):
 		keys = pygame.key.get_pressed()
@@ -205,9 +216,10 @@ class Player(pygame.sprite.Sprite):
 
 			# Seed use
 			if keys[self.keys_bind['action']['use seed']]:
-				self.timers['seed use'].activate()
-				self.direction = pygame.math.Vector2()
-				self.frame_index = 0
+				if self.selected_item.endswith('seeds'):
+					self.timers['seed use'].activate()
+					self.direction = pygame.math.Vector2()
+					self.frame_index = 0
 
 			# Interaction
 			if keys[self.keys_bind['action']['interact']]:
@@ -286,6 +298,7 @@ class Player(pygame.sprite.Sprite):
 		self.animate(dt)
 		# Draw inventory UI only
 		self.inventory_ui.draw()
+		self.update_hotbar()
 		
 
 

@@ -57,56 +57,58 @@ class Game:
 		
 	def run(self):
 		fps_overlay = FPSOverlay()
+		try:
+			while self.running:
+				dt = self.clock.tick(FPS) / 1000.0  # Tính dt từ clock.tick, FPS là số khung hình mục tiêu
 
-		while self.running:
-			dt = self.clock.tick(FPS) / 1000.0  # Tính dt từ clock.tick, FPS là số khung hình mục tiêu
+				# Handle cursor position
+				mouse_pos = pygame.mouse.get_pos()
+				if self.level.player.inventory_ui.dragging:
+					self.cursor_img = self.hold_cursor_img
+				elif self.level.player.inventory_ui.hovering:
+					self.cursor_img = self.point_cursor_img
+				else:
+					self.cursor_img = self.default_cursor_img
+				self.cursor_rect = self.cursor_img.get_rect()
+				self.cursor_rect.center = mouse_pos
+				
+				# Clear screen
+				self.screen.fill('black')
 
-			# Handle cursor position
-			mouse_pos = pygame.mouse.get_pos()
-			if self.level.player.inventory_ui.dragging:
-				self.cursor_img = self.hold_cursor_img
-			elif self.level.player.inventory_ui.hovering:
-				self.cursor_img = self.point_cursor_img
-			else:
-				self.cursor_img = self.default_cursor_img
-			self.cursor_rect = self.cursor_img.get_rect()
-			self.cursor_rect.center = mouse_pos
+				# Handle events
+				for event in pygame.event.get():
+					if event.type == pygame.QUIT:
+						self.running = False
+						continue
+
+					# Xử lý sự kiện cho màn hình chọn nhân vật
+					if self.game_state == "character_select" and self.character_select_ui:
+						self.character_select_ui.handle_event(event)
+						continue  # Bỏ qua các xử lý khác khi đang ở màn hình chọn nhân vật
+
+					if event.type == pygame.KEYDOWN:
+						if event.key == pygame.K_ESCAPE:
+							self.handle_escape()
+						elif self.game_state == "game":
+							self.handle_game_input(event)
+
+					# Xử lý các sự kiện chuột cho mission_ui
+					if event.type == pygame.MOUSEBUTTONDOWN:
+						if self.mission_ui.handle_click(event.pos):
+							continue  # Sự kiện đã được xử lý bởi mission UI
+
+				# Update game state
+				self.update_game_state(dt, mouse_pos, pygame.mouse.get_pressed()[0])
+
+				# Draw cursor and overlay FPS
+
+				self.screen.blit(self.cursor_img, self.cursor_rect)
+				if self.level.all_sprites.debug_mode:
+					fps_overlay.draw(self.screen, self.clock)
+				pygame.display.flip()
+		except Exception as e:
+			print(f"An error occurred: {e}")
 			
-			# Clear screen
-			self.screen.fill('black')
-
-			# Handle events
-			for event in pygame.event.get():
-				if event.type == pygame.QUIT:
-					self.running = False
-					continue
-
-				# Xử lý sự kiện cho màn hình chọn nhân vật
-				if self.game_state == "character_select" and self.character_select_ui:
-					self.character_select_ui.handle_event(event)
-					continue  # Bỏ qua các xử lý khác khi đang ở màn hình chọn nhân vật
-
-				if event.type == pygame.KEYDOWN:
-					if event.key == pygame.K_ESCAPE:
-						self.handle_escape()
-					elif self.game_state == "game":
-						self.handle_game_input(event)
-
-				# Xử lý các sự kiện chuột cho mission_ui
-				if event.type == pygame.MOUSEBUTTONDOWN:
-					if self.mission_ui.handle_click(event.pos):
-						continue  # Sự kiện đã được xử lý bởi mission UI
-
-			# Update game state
-			self.update_game_state(dt, mouse_pos, pygame.mouse.get_pressed()[0])
-
-			# Draw cursor and overlay FPS
-
-			self.screen.blit(self.cursor_img, self.cursor_rect)
-			if self.level.all_sprites.debug_mode:
-				fps_overlay.draw(self.screen, self.clock)
-			pygame.display.flip()
-
 	def initialize_character_select(self):
 		"""Khởi tạo giao diện chọn nhân vật"""
 		

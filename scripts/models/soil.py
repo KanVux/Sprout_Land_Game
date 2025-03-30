@@ -24,7 +24,7 @@ class Plant(pygame.sprite.Sprite):
 		super().__init__(groups)
 		self.plant_type = plant_type
 		# Import folder cho loại cây; đảm bảo folder tồn tại và tên khớp
-		self.frames = import_folder(f"{GRAPHICS_PATH}/fruit/{plant_type}")
+		self.frames = import_folder(f"{GRAPHICS_PATH}/fruit/{plant_type.replace(' seeds', '')}")
 		if not self.frames:
 			raise ValueError(f"Không tìm thấy asset cho cây: {plant_type}")
 		self.soil = soil
@@ -98,8 +98,8 @@ class SoildLayer:
 		self.water_sprites = pygame.sprite.Group()
 		self.plant_sprites = pygame.sprite.Group()
 		# Assets
-		self.soil_surfs = import_folder_dict(f'{GRAPHICS_PATH}/soil/')
-		self.water_surfs = import_folder(f'{GRAPHICS_PATH}/soil_water/')
+		self.soil_surfs = import_folder_dict(f'{GRAPHICS_PATH}/world/soil/')
+		self.water_surfs = import_folder(f'{GRAPHICS_PATH}/world/soil_water/')
 		
 		self.create_soil_grid()
 		self.create_hit_rects()

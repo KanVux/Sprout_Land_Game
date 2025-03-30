@@ -9,7 +9,7 @@ class Overlay:
         # Nhập các tài nguyên
         overlay_path = f'{GRAPHICS_PATH}/overlay/'
         self.tools_surface = {tool: pygame.image.load(f'{overlay_path}{tool}.png').convert_alpha() for tool in player.tools}
-        self.seeds_surface = {}
+        self.hotbar_surface = {}
       
         # Tải các thành phần giao diện
         self.highlight_surface = pygame.image.load(f'{overlay_path}hotbar/hotbar_selected_highlight.png').convert_alpha()
@@ -25,7 +25,7 @@ class Overlay:
         self.slot_size = 70 # Đảm bảo ô vừa theo chiều dọc
         
         # Khởi tạo danh sách vật phẩm trước
-        self.items = self.player.tools +  self.player.seeds  # Kết hợp công cụ và hạt giống
+        self.items = self.player.tools +  self.player.hotbar  # Kết hợp công cụ và hạt giống
         
         # Tính khoảng cách đều nhau
         self.total_items = len(self.items)
@@ -50,11 +50,11 @@ class Overlay:
         # Thiết lập chỉ số được chọn ban đầu dựa trên công cụ của người chơi
         if player.selected_tool in player.tools:
             self.selected_index = player.tools.index(player.selected_tool)
-        elif player.selected_seed in player.seeds:
-            self.selected_index = len(player.tools) + player.seeds.index(player.selected_seed)
+        elif player.selected_item in player.hotbar:
+            self.selected_index = len(player.tools) + player.hotbar.index(player.selected_item)
         
         # Tải bề mặt hạt giống ban đầu
-        self.update_seed_surfaces()
+        self.update_hotbar_surfaces()
 
     def update_selected_index(self, new_index):
         """Cập nhật chỉ số được chọn và công cụ/hạt giống của người chơi"""
@@ -71,8 +71,8 @@ class Overlay:
                 self.player.selected_tool = selected_item
                 self.player.tool_index = self.player.tools.index(selected_item)
             else:
-                self.player.selected_seed = selected_item
-                self.player.seed_index = self.player.seeds.index(selected_item)
+                self.player.selected_item = selected_item
+                self.player.hotbar_index = self.player.hotbar.index(selected_item)
             return True
         return False
 
@@ -86,25 +86,25 @@ class Overlay:
                 self.player.selected_tool = selected_item
                 self.player.tool_index = self.player.tools.index(selected_item)
             else:
-                self.player.selected_seed = selected_item
-                self.player.seed_index = self.player.seeds.index(selected_item)
+                self.player.selected_item = selected_item
+                self.player.hotbar_index = self.player.hotbar.index(selected_item)
             # Kích hoạt hiệu ứng đánh dấu khi chọn vật phẩm
             self.scroll_highlight_timer = self.scroll_highlight_duration
 
-    def update_seed_surfaces(self):
+    def update_hotbar_surfaces(self):
         """Cập nhật bề mặt hạt giống dựa trên danh sách hạt giống của người chơi"""
         # Xóa và tạo lại các surface cho seeds
-        self.seeds_surface = {}
+        self.hotbar_surface = {}
         
         # Tải lại hình ảnh cho tất cả hạt giống hiện tại
-        for seed in self.player.seeds:
+        for item in self.player.hotbar:
             try:
-                self.seeds_surface[seed] = pygame.image.load(f'{GRAPHICS_PATH}/items/{seed} seeds.png').convert_alpha()
+                self.hotbar_surface[item] = pygame.image.load(f'{GRAPHICS_PATH}/items/{item}.png').convert_alpha()
             except:
-                print(f"Không thể tải hình ảnh cho hạt giống: {seed}")
+                print(f"Không thể tải hình ảnh cho vật phẩm: {item}")
         
         # Cập nhật danh sách vật phẩm
-        self.items = self.player.tools + self.player.seeds
+        self.items = self.player.tools + self.player.hotbar
         
         # Tính lại khoảng cách giữa các slot
         self.total_items = len(self.items)
@@ -115,7 +115,7 @@ class Overlay:
     def update_hotbar(self):
         """Cập nhật hotbar khi danh sách công cụ hoặc hạt giống thay đổi"""
         # Cập nhật bề mặt hạt giống
-        self.update_seed_surfaces()
+        self.update_hotbar_surfaces()
         
         # Đảm bảo chỉ số được chọn vẫn hợp lệ
         if self.selected_index >= len(self.items):
@@ -134,7 +134,7 @@ class Overlay:
         
         # Lấy vật phẩm đang được chọn để đánh dấu
         current_tool = self.player.selected_tool
-        current_seed = self.player.selected_seed
+        current_seed = self.player.selected_item
         
         # Vẽ ô công cụ và vật phẩm
         for index, item in enumerate(self.items):
@@ -175,7 +175,7 @@ class Overlay:
             if item in self.player.tools:
                 item_surface = pygame.transform.scale(self.tools_surface[item], (item_size, item_size))
             else:
-                item_surface = pygame.transform.scale(self.seeds_surface[item], (item_size, item_size))
+                item_surface = pygame.transform.scale(self.hotbar_surface[item], (item_size, item_size))
             
             # Hiệu ứng phóng to cho item được chọn khi cuộn
             if is_selected and self.scroll_highlight_timer > 0:
@@ -202,12 +202,12 @@ class Overlay:
         
         # Cập nhật chỉ số được chọn trước khi vẽ
         self.update_selected_index(self.selected_index)
-        self.update_seed_surfaces()
+        
         # Xóa bề mặt overlay
         self.overlay_surf.fill((0, 0, 0, 0))
-        
         # Vẽ thanh công cụ
         self.draw_hotbar()
+        self.update_hotbar()
         
         # Vẽ bề mặt overlay lên màn hình
         self.display_surface.blit(self.overlay_surf, (0, 0))

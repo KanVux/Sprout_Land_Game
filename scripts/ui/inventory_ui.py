@@ -141,59 +141,9 @@ class InventoryUI:
         else:
             # Khi đóng inventory, đồng bộ các vật phẩm trong 3 slot đầu với hotbar
             InventoryDatabase.save_inventory(self.player.player_id, self.player.inventory)
-            self.update_player_hotbar()
     
-    def update_player_hotbar(self):
-        """Cập nhật danh sách vật phẩm trên hotbar của người chơi từ 3 slot đầu"""
-        
-        if hasattr(self.player, 'ui'):
-            # Lấy các item từ 3 slot đầu tiên
-            hotbar_items = []
-            for i in range(self.hotbar_slots):
-                if i < len(self.player.inventory.items) and self.player.inventory.items[i] is not None:
-                    item = self.player.inventory.items[i]
-                    hotbar_items.append({
-                        'name': item.item_name,
-                        'quantity': item.quantity
-                    })
-                else:
-                    hotbar_items.append(None)
-                    
-            # Cập nhật các slot tùy chỉnh trong overlay
-            for i, item_data in enumerate(hotbar_items):
-                if hasattr(self.player.ui, 'custom_slots') and i < len(self.player.ui.custom_slots):
-                    if item_data is not None:
-                        self.player.ui.custom_slots[i] = item_data['name']
-                        self.player.ui.custom_slot_quantities[i] = item_data['quantity']
-                    else:
-                        self.player.ui.custom_slots[i] = None
-                        self.player.ui.custom_slot_quantities[i] = 0
-
-    def update_player_seeds(self):
-        """Cập nhật danh sách hạt giống của người chơi từ inventory"""
-        # Tạo danh sách hạt giống mới từ inventory
-        new_seeds = []
-        for item in self.player.inventory.items:
-            if item is not None and item.item_name.endswith('seeds'):
-                seed_name = item.item_name.split(' ')[0]
-                if seed_name not in new_seeds:
-                    new_seeds.append(seed_name)
-        
-        # Cập nhật danh sách hạt giống của người chơi
-        if new_seeds:
-            self.player.seeds = new_seeds
-            
-            # Giữ lại hạt giống đã chọn nếu vẫn có trong danh sách mới
-            if self.player.selected_seed in new_seeds:
-                self.player.seed_index = new_seeds.index(self.player.selected_seed)
-            else:
-                # Nếu hạt giống đã chọn không còn trong danh sách, chọn hạt giống đầu tiên
-                self.player.seed_index = 0
-                self.player.selected_seed = new_seeds[0]
-            
-            # Cập nhật overlay hotbar nếu có
-            if hasattr(self.player, 'overlay'):
-                self.player.overlay.update_hotbar()
+   
+   
             
     def get_slot_at_pos(self, pos):
         """Xác định vị trí slot dựa trên tọa độ chuột"""
@@ -274,14 +224,7 @@ class InventoryUI:
                     if self.dragged_origin != target_slot:
                         self.player.inventory.items[self.dragged_origin], self.player.inventory.items[target_slot] = \
                         self.player.inventory.items[target_slot], self.player.inventory.items[self.dragged_origin]
-                    
-                    # Cập nhật hotbar nếu một trong hai vị trí liên quan đến slot hotbar
-                    if self.is_hotbar_slot(self.dragged_origin) or self.is_hotbar_slot(target_slot):
-                        self.update_player_hotbar()
-                    
-                    # Cập nhật danh sách hạt giống nếu kéo thả hạt giống
-                    if self.dragged_item and self.dragged_item.item_name.endswith('seeds'):
-                        self.update_player_seeds()
+
                 
                 # Reset trạng thái kéo thả
                 self.dragging = False
@@ -347,14 +290,7 @@ class InventoryUI:
                     if self.dragged_origin != target_slot:
                         self.player.inventory.items[self.dragged_origin], self.player.inventory.items[target_slot] = \
                         self.player.inventory.items[target_slot], self.player.inventory.items[self.dragged_origin]
-                        
-                        # Cập nhật hotbar nếu một trong hai vị trí liên quan đến slot hotbar
-                        if self.is_hotbar_slot(self.dragged_origin) or self.is_hotbar_slot(target_slot):
-                            self.update_player_hotbar()
-                        
-                        # Cập nhật danh sách hạt giống nếu kéo thả hạt giống
-                        if self.dragged_item and self.dragged_item.item_name.endswith('seeds'):
-                            self.update_player_seeds()
+
                 
                 self.dragging = False
                 self.dragged_item = None
