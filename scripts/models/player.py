@@ -152,8 +152,7 @@ class Player(pygame.sprite.Sprite):
 		self.target_pos = self.rect.center + PLAYER_TOOL_OFFSET[self.status.split('_')[0]]
    
 	def use_seed(self):
-		seed_name = f'{self.selected_item} seeds'
-		print(seed_name)
+		seed_name = f'{self.selected_item}'
 		if self.has_item(seed_name):
 			if self.soil_layer.plant_seed(self.target_pos, self.selected_item):
 				self.remove_item(seed_name, 1)

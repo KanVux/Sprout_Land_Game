@@ -9,7 +9,7 @@ class InventoryUI:
         
         # Tải font đẹp hơn
         self.title_font = pygame.font.Font(f'{FONT_PATH}/Lycheesoda.ttf', 30)
-        self.font = pygame.font.Font(f'{FONT_PATH}/Lycheesoda.ttf', 20)
+        self.font = pygame.font.Font(f'{FONT_PATH}/Lycheesoda.ttf', 15)
         
         # Thiết lập UI
         self.padding = 20
@@ -18,8 +18,8 @@ class InventoryUI:
         self.cols = 5
         self.rows = 4
         
-        # Số lượng slot đặc biệt (3 ô đầu tiên của hàng đầu)
-        self.hotbar_slots = 3
+        # Số lượng slot đặc biệt (6 ô đầu tiên của hàng đầu)
+        self.hotbar_slots = 6
         
         # Tính toán kích thước cửa sổ inventory
         self.width = self.cols * (self.slot_size + self.gap) + self.padding * 2
@@ -106,7 +106,7 @@ class InventoryUI:
         return 0 <= slot_index < self.hotbar_slots
     
     def sync_with_hotbar(self):
-        """Đồng bộ 3 slot đầu tiên với danh sách hotbar của người chơi"""
+        """Đồng bộ 6 slot đầu tiên với danh sách hotbar của người chơi"""
         # Đảm bảo inventory có đủ slot
         while len(self.player.inventory.items) < self.rows * self.cols:
             self.player.inventory.items.append(None)
@@ -118,7 +118,7 @@ class InventoryUI:
                 if item is not None:
                     hotbar_items.append(item)
                     
-        # Cập nhật lại 3 slot đầu tiên dựa trên các vật phẩm trong hotbar
+        # Cập nhật lại 6 slot đầu tiên dựa trên các vật phẩm trong hotbar
         for i, item_name in enumerate(hotbar_items):
             if i < self.hotbar_slots:
                 # Tìm item trong inventory để đặt vào slot hotbar
@@ -141,9 +141,6 @@ class InventoryUI:
         else:
             # Khi đóng inventory, đồng bộ các vật phẩm trong 3 slot đầu với hotbar
             InventoryDatabase.save_inventory(self.player.player_id, self.player.inventory)
-    
-   
-   
             
     def get_slot_at_pos(self, pos):
         """Xác định vị trí slot dựa trên tọa độ chuột"""
@@ -337,7 +334,7 @@ class InventoryUI:
         
         # Hiển thị tooltip
         self.display_surface.blit(tooltip_surf, (tooltip_x, tooltip_y))
-
+    
     def draw(self):
         """Vẽ inventory UI"""
         if not self.active:

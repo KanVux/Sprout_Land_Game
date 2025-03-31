@@ -255,9 +255,15 @@ class Tree(pygame.sprite.Sprite):
 				duration=200
 			)
 			# Chuyển cây thành gỗ (stump)
-			self.hitbox = self.rect.copy().inflate(-self.rect.width * 0.6, -self.rect.height * 0.7)
-			self.hitbox.x = self.rect.x + 25
-			self.hitbox.y = self.rect.y + 70
+			if self.name == 'Medium':
+				self.hitbox = self.rect.copy().inflate(-self.rect.width * 0.6, -self.rect.height * 0.7)
+				self.hitbox.x = self.rect.x + 28
+				self.hitbox.y = self.rect.y + 70
+			elif self.name == 'Small':
+				self.hitbox = self.rect.copy().inflate(-self.rect.width * 0.58, -self.rect.height * 0.7)
+				self.hitbox.x = self.rect.x + 21
+				self.hitbox.y = self.rect.y + 70
+
 			self.image = self.stump_surf
 			stump_rect = self.image.get_rect()
 			stump_rect.midbottom = self.rect.midbottom
