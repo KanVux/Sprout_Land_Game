@@ -54,7 +54,8 @@ class Player(pygame.sprite.Sprite):
 			'seed use': Timer(350, self.use_seed),
 			'seed switch': Timer(200),
 			'inventory open': Timer(200),
-			'debug mode': Timer(200)
+			'debug mode': Timer(200),
+			'dialog': Timer(200),
 		}
 
 		# Tools
@@ -233,11 +234,17 @@ class Player(pygame.sprite.Sprite):
 					elif collided_interaction_sprite[0].name == 'Bed':
 						self.status = 'left_idle'
 						self.sleep = True
-					elif collided_interaction_sprite[0].name == 'Mayor':
-						self.talking_to = 'Mayor'
-						self.talking = True
-						self.mission_manager.update_mission_progress(10, 1)
-						self.mission_manager.update_mission_progress(11, 1)
+					elif collided_interaction_sprite[0].name == 'Mayor' and not self.timers['dialog'].active:
+						self.timers['dialog'].activate()
+						if not self.talking:  # Chỉ bật khi chưa đang nói chuyện
+							self.talking_to = 'Mayor'
+							self.talking = True
+							self.mission_manager.update_mission_progress(10, 1)
+							self.mission_manager.update_mission_progress(11, 1)
+						else:
+							# Nếu đã đang nói chuyện, click lần nữa sẽ tắt dialog
+							self.talking = False
+							self.talking_to = None
 
 			if keys[self.keys_bind['action']['interact']] and self.groups()[0].debug_mode:
 				self.toggle_shop()

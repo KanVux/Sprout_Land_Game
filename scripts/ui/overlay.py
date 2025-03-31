@@ -956,6 +956,11 @@ class Dialog:
 		"""Trả về hình chữ nhật của hội thoại để phát hiện va chạm"""
 		return self.dialog_bg_rect
 
+	def close_dialog(self):
+		"""Đóng hộp thoại ngay lập tức"""
+		self.is_active = False
+		return "closed"
+
 class Clock:
 	def __init__(self, sky):
 		self.display_surface = pygame.display.get_surface()

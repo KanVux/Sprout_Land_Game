@@ -63,7 +63,9 @@ class Level:
 		self.dialog_index = randint(0,2)
 		self.bonnie_the_trader_dialog = Dialog("bonnie", DIALOG['bonnie'].get('gretting')[self.dialog_index], self.display_surface, f'{GRAPHICS_PATH}/ui/dialog/avatar/bonnie.png')
 
-		self.mayor_dialog = Dialog("mayor", DIALOG['mayor'].get('gretting')[self.dialog_index], self.display_surface, f'{GRAPHICS_PATH}/ui/dialog/avatar/bonnie.png')
+		self.mayor_dialog = None  # Chỉ khởi tạo khi cần thiết
+		self.mayor_dialog_active = False
+
 		# Add time tracking
 		self.time_elapsed = 0
 
@@ -215,12 +217,35 @@ class Level:
 	
 	def draw_mayor_dialog(self, dt):
 		if self.player.talking_to == 'Mayor' and self.player.talking:
-			self.dialog_index = randint(0,2)
-			self.mayor_dialog = Dialog('mayor',DIALOG['mayor'].get('gretting')[self.dialog_index],self.display_surface,f'{GRAPHICS_PATH}/ui/dialog/avatar/bonnie.png')
-			self.mayor_dialog.draw()
-			self.mayor_dialog.update(dt)
+			# Tạo dialog mới nếu chưa có hoặc đã kết thúc
+			if not self.mayor_dialog or not self.mayor_dialog.is_active:
+				self.dialog_index = randint(0,2)
+				self.mayor_dialog = Dialog(
+					'Mayor',
+					DIALOG['mayor'].get('gretting')[self.dialog_index],
+					self.display_surface,
+					f'{GRAPHICS_PATH}/ui/dialog/avatar/bonnie.png'
+				)
+				self.mayor_dialog_active = True
+				
+			# Cập nhật và vẽ dialog
+			if self.mayor_dialog_active:
+				self.mayor_dialog.draw()
+				self.mayor_dialog.update(dt)
+				
+				# Xử lý sự kiện người dùng cho dialog
+				for event in pygame.event.get([pygame.MOUSEBUTTONDOWN, pygame.KEYDOWN, pygame.MOUSEBUTTONUP, pygame.MOUSEWHEEL]):
+					result = self.mayor_dialog.handle_event(event)
+					# Nếu dialog kết thúc, tắt trạng thái nói chuyện của người chơi
+					if result is not None and not self.mayor_dialog.is_active:
+						self.player.talking = False
+						self.player.talking_to = None
+						self.mayor_dialog_active = False
 		else:
-			self.mayor_dialog.is_active = False
+			# Nếu người chơi không còn nói chuyện, đảm bảo dialog bị tắt
+			if self.mayor_dialog and self.mayor_dialog.is_active:
+				self.mayor_dialog.is_active = False
+				self.mayor_dialog_active = False
 
 	def get_sleep_duration(self):
 		"""Determine sleep duration based on time of day"""

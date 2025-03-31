@@ -53,19 +53,18 @@ DIALOG = {
 			"Thanks for stopping by, see you again soon!"
 		]
 	},
-	'mayor': {
-	   'gretting': [
-			"If you’re looking to trade, I’m always open. I’ve got some great deals and rare items!",
-			"Feel free to pick whatever you like, or if you’ve got something to trade, we can work out a deal!",
-			"Don’t be shy, let me know what you want and we’ll make it happen!"
+	"mayor": {
+		"gretting": [
+				"Welcome! I'm always here to help. If you have any questions about the town, just ask!",
+				"A fine day, isn't it? If you need advice or assistance, don't hesitate to let me know.",
+				"It's great to see you! How can I help you today?"
 		],
-		'goodbye': [
-			"Don’t forget to come back when you need anything else, I’m always getting new stock!",
-			"I hope you found what you needed. Don’t hesitate to return if you need more!",
-			"Thanks for stopping by, see you again soon!"
+		"goodbye": [
+				"Take care, and remember—my door is always open if you need anything!",
+				"I hope you enjoy your time in our town. Come back anytime!",
+				"Farewell! If you ever need guidance, you know where to find me."
 		]
 	}
-	
 }	
 
 SEED_PROP = {
@@ -161,7 +160,8 @@ sounds = [
 		chopping_sound, 
 		tilt_sound,
 		watering_sound,
-		plant_seed_sound
+		plant_seed_sound,
+		char_sound
 		]
 
 # For example, in settings.py
