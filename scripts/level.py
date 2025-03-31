@@ -63,6 +63,7 @@ class Level:
 		self.dialog_index = randint(0,2)
 		self.bonnie_the_trader_dialog = Dialog("bonnie", DIALOG['bonnie'].get('gretting')[self.dialog_index], self.display_surface, f'{GRAPHICS_PATH}/ui/dialog/avatar/bonnie.png')
 
+		self.mayor_dialog = Dialog("mayor", DIALOG['mayor'].get('gretting')[self.dialog_index], self.display_surface, f'{GRAPHICS_PATH}/ui/dialog/avatar/bonnie.png')
 		# Add time tracking
 		self.time_elapsed = 0
 
@@ -100,7 +101,16 @@ class Level:
 			groups = self.all_sprites,
 			z = LAYERS['ground'],
 			)
+		for layer in ['Ground', 'Forest Grass', 'Outside Decoration', 'Hills']:
+			for x, y, surface in tmx_data.get_layer_by_name(layer).tiles():
+				Generic(
+					pos=(x * TILE_SIZE, y * TILE_SIZE),
+					surf=surface,
+					groups=[self.all_sprites],
+					z=LAYERS['ground']
+				)
 		
+
 		for layer in ['HouseFloor','HouseFurnitureBottom']:
 			for x, y, surface in tmx_data.get_layer_by_name(layer).tiles():
 				Generic(
@@ -172,7 +182,9 @@ class Level:
 				Interaction((obj.x, obj.y), (obj.width, obj.height), self.interaction_sprites, obj.name)
 			if obj.name == 'Trader':
 				Interaction((obj.x, obj.y), (obj.width, obj.height), self.interaction_sprites, obj.name)
-			
+			if obj.name == 'Mayor':
+				Interaction((obj.x, obj.y), (obj.width, obj.height), self.interaction_sprites, obj.name)
+		
 		# Trees - only in tree_sprites
 		for obj in tmx_data.get_layer_by_name('Trees'):
 			if obj.type == "Tree":
@@ -201,6 +213,15 @@ class Level:
 		self.dialog_index = randint(0,2)
 		self.bonnie_the_trader_dialog = Dialog('bonnie',DIALOG['bonnie'].get('gretting')[self.dialog_index],self.display_surface,f'{GRAPHICS_PATH}/ui/dialog/avatar/bonnie.png')
 	
+	def draw_mayor_dialog(self, dt):
+		if self.player.talking_to == 'Mayor' and self.player.talking:
+			self.dialog_index = randint(0,2)
+			self.mayor_dialog = Dialog('mayor',DIALOG['mayor'].get('gretting')[self.dialog_index],self.display_surface,f'{GRAPHICS_PATH}/ui/dialog/avatar/bonnie.png')
+			self.mayor_dialog.draw()
+			self.mayor_dialog.update(dt)
+		else:
+			self.mayor_dialog.is_active = False
+
 	def get_sleep_duration(self):
 		"""Determine sleep duration based on time of day"""
 		current_hour = self.sky.time_of_day
@@ -530,7 +551,8 @@ class Level:
 		if self.bonnie_the_trader_dialog.is_active:
 			self.bonnie_the_trader_dialog.update(dt)
 			self.bonnie_the_trader_dialog.draw()
-		
+
+		self.draw_mayor_dialog(dt)
 
 	
 class CameraGroup(pygame.sprite.Group):

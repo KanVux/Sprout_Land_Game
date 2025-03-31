@@ -52,6 +52,18 @@ DIALOG = {
 			"I hope you found what you needed. Don’t hesitate to return if you need more!",
 			"Thanks for stopping by, see you again soon!"
 		]
+	},
+	'mayor': {
+	   'gretting': [
+			"If you’re looking to trade, I’m always open. I’ve got some great deals and rare items!",
+			"Feel free to pick whatever you like, or if you’ve got something to trade, we can work out a deal!",
+			"Don’t be shy, let me know what you want and we’ll make it happen!"
+		],
+		'goodbye': [
+			"Don’t forget to come back when you need anything else, I’m always getting new stock!",
+			"I hope you found what you needed. Don’t hesitate to return if you need more!",
+			"Thanks for stopping by, see you again soon!"
+		]
 	}
 	
 }	

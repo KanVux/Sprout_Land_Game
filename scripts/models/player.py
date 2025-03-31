@@ -86,7 +86,8 @@ class Player(pygame.sprite.Sprite):
 		from scripts.ui.overlay import Overlay
 		self.overlay = Overlay(self)
 		
-		
+		self.talking_to = None
+		self.talking = False
 
 	def save_inventory(self):
 		"""Lưu inventory vào cơ sở dữ liệu"""
@@ -227,10 +228,17 @@ class Player(pygame.sprite.Sprite):
 				collided_interaction_sprite = pygame.sprite.spritecollide(self, self.interaction_sprites, False)
 				if collided_interaction_sprite:
 					if collided_interaction_sprite[0].name == 'Trader':
+						self.mission_manager.update_mission_progress(11, 1)
 						self.toggle_shop()
-					else:
+					elif collided_interaction_sprite[0].name == 'Bed':
 						self.status = 'left_idle'
 						self.sleep = True
+					elif collided_interaction_sprite[0].name == 'Mayor':
+						self.talking_to = 'Mayor'
+						self.talking = True
+						self.mission_manager.update_mission_progress(10, 1)
+						self.mission_manager.update_mission_progress(11, 1)
+
 			if keys[self.keys_bind['action']['interact']] and self.groups()[0].debug_mode:
 				self.toggle_shop()
 
