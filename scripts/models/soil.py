@@ -51,7 +51,7 @@ class Plant(pygame.sprite.Sprite):
 	def check_water_status(self):
 		"""Check if plant has been watered and update status"""
 		current_time = pygame.time.get_ticks()
-		is_watered = self.check_watered
+		is_watered = self.check_watered(self.rect.midbottom)
 		if is_watered:
 			self.last_watered = current_time
 			self.needs_water = False
@@ -70,7 +70,6 @@ class Plant(pygame.sprite.Sprite):
 
 	def grow(self):
 		# First check water status
-		print(self.age)
 		if not self.check_water_status():
 			return
 
