@@ -15,10 +15,7 @@ FONT_PATH = 'assets/font'
 
 
 
-# overlay positions 
-OVERLAY_POSITIONS = {
-	'tool' : (40, SCREEN_HEIGHT - 100), 
-	'seed': (SCREEN_WIDTH - 200, SCREEN_HEIGHT - 100)}
+
 
 PLAYER_TOOL_OFFSET = {
 	'left': Vector2(-50,40),
@@ -65,11 +62,11 @@ SEED_PROP = {
 
 # debug nên cho = 1 sẽ sửa lại sau
 GROW_SPEED = { 
-	'corn': 1, # ~ 22p để lớn hoàn toàn
-	'tomato': 1, # ~ 37p để lớn hoàn toàn
+	'corn': 1, 
+	'tomato': 1, 
 	'carrot': 1,
 	'wheat': 1,
-	# note: thêm cây sau 
+	# note: thêm cây 
 }
 
 SLEEP_PROP = {

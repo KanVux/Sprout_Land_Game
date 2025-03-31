@@ -12,6 +12,7 @@ class Game:
 	def __init__(self):
 		pygame.init()
 		
+		
 		self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 		pygame.display.set_caption('Sprout Land')
 		
@@ -57,58 +58,60 @@ class Game:
 		
 	def run(self):
 		fps_overlay = FPSOverlay()
-		try:
-			while self.running:
-				dt = self.clock.tick(FPS) / 1000.0  # Tính dt từ clock.tick, FPS là số khung hình mục tiêu
 
-				# Handle cursor position
-				mouse_pos = pygame.mouse.get_pos()
-				if self.level.player.inventory_ui.dragging:
-					self.cursor_img = self.hold_cursor_img
-				elif self.level.player.inventory_ui.hovering:
-					self.cursor_img = self.point_cursor_img
-				else:
-					self.cursor_img = self.default_cursor_img
-				self.cursor_rect = self.cursor_img.get_rect()
-				self.cursor_rect.center = mouse_pos
-				
-				# Clear screen
-				self.screen.fill('black')
+		while self.running:
+			dt = self.clock.tick(FPS) / 1000.0  # Tính dt từ clock.tick, FPS là số khung hình mục tiêu
 
-				# Handle events
-				for event in pygame.event.get():
-					if event.type == pygame.QUIT:
-						self.running = False
-						continue
-
-					# Xử lý sự kiện cho màn hình chọn nhân vật
-					if self.game_state == "character_select" and self.character_select_ui:
-						self.character_select_ui.handle_event(event)
-						continue  # Bỏ qua các xử lý khác khi đang ở màn hình chọn nhân vật
-
-					if event.type == pygame.KEYDOWN:
-						if event.key == pygame.K_ESCAPE:
-							self.handle_escape()
-						elif self.game_state == "game":
-							self.handle_game_input(event)
-
-					# Xử lý các sự kiện chuột cho mission_ui
-					if event.type == pygame.MOUSEBUTTONDOWN:
-						if self.mission_ui.handle_click(event.pos):
-							continue  # Sự kiện đã được xử lý bởi mission UI
-
-				# Update game state
-				self.update_game_state(dt, mouse_pos, pygame.mouse.get_pressed()[0])
-
-				# Draw cursor and overlay FPS
-
-				self.screen.blit(self.cursor_img, self.cursor_rect)
-				if self.level.all_sprites.debug_mode:
-					fps_overlay.draw(self.screen, self.clock)
-				pygame.display.flip()
-		except Exception as e:
-			print(f"An error occurred: {e}")
+			# Handle cursor position
+			mouse_pos = pygame.mouse.get_pos()
+			if self.level.player.inventory_ui.dragging:
+				self.cursor_img = self.hold_cursor_img
+			elif self.level.player.inventory_ui.hovering:
+				self.cursor_img = self.point_cursor_img
+			else:
+				self.cursor_img = self.default_cursor_img
+			self.cursor_rect = self.cursor_img.get_rect()
+			self.cursor_rect.center = mouse_pos
 			
+			# Clear screen
+			self.screen.fill('black')
+
+			# Handle events
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					self.running = False
+					continue
+
+				# Xử lý sự kiện cho màn hình chọn nhân vật
+				if self.game_state == "character_select" and self.character_select_ui:
+					self.character_select_ui.handle_event(event)
+					continue  # Bỏ qua các xử lý khác khi đang ở màn hình chọn nhân vật
+
+				if event.type == pygame.KEYDOWN:
+					if event.key == pygame.K_ESCAPE:
+						self.handle_escape()
+					elif self.game_state == "game":
+						self.handle_game_input(event)
+
+				# Xử lý các sự kiện chuột cho mission_ui
+				if event.type == pygame.MOUSEBUTTONDOWN:
+					if self.mission_ui.handle_click(event.pos):
+						continue  # Sự kiện đã được xử lý bởi mission UI
+				if event.type ==  pygame.MOUSEWHEEL:
+					if self.game_state == "game":
+						self.handle_hotbar_scroll(event)
+
+			# Update game state
+			self.update_game_state(dt, mouse_pos, pygame.mouse.get_pressed()[0])
+
+			# Draw cursor and overlay FPS
+
+			self.screen.blit(self.cursor_img, self.cursor_rect)
+			if self.level.all_sprites.debug_mode:
+				fps_overlay.draw(self.screen, self.clock)
+			pygame.display.flip()
+
+		
 	def initialize_character_select(self):
 		"""Khởi tạo giao diện chọn nhân vật"""
 		
@@ -164,28 +167,29 @@ class Game:
 			self.level.player.inventory_ui.handle_click(event)
 			return
 
-		if event.type == pygame.MOUSEWHEEL and not self.level.player.inventory_ui.active:
-			self.handle_hotbar_scroll(event)
-		elif event.type == pygame.KEYDOWN and not self.level.player.inventory_ui.active:
+		if event.type == pygame.KEYDOWN and not self.level.player.inventory_ui.active:
 			self.handle_number_keys(event)
 
 
 	def handle_hotbar_scroll(self, event):
 		"""Handle hotbar scrolling"""
-		if not self.level.player.timers['tool switch'].active:
-			current_index = self.level.player.overlay.selected_index
-			new_index = (current_index - event.y) % len(self.level.player.overlay.items)
-			if self.level.player.overlay.update_selected_index(new_index):
-				self.level.player.timers['tool switch'].activate()
+		player = self.level.player
+		
+		if not player.timers['tool switch'].active:
+			# Update the hotbar index with scroll
+			current_index = player.tool_index
+			player.tool_index = (current_index - event.y) % len(player.tools)  # Note: invert the y value
+			player.timers['tool switch'].activate()
+			
+			# Set the selected item
+			if player.tools and player.tool_index < len(player.tools):
+				player.selected_tool = player.tools[player.tool_index]
 
 	def handle_number_keys(self, event):
 		"""Handle number key input"""
 		if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9]:
-			if not self.level.player.timers['tool switch'].active:
-				index = event.key - pygame.K_1
-				if index < len(self.level.player.overlay.items):
-					if self.level.player.overlay.update_selected_index(index):
-						self.level.player.timers['tool switch'].activate()
+			index = event.key - pygame.K_1
+			self.level.player.hotbar_index = index
 
 	def update_game_state(self, dt, mouse_pos, mouse_pressed):
 		"""Update current game state"""

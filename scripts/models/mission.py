@@ -269,7 +269,6 @@ class MissionManager:
                 
             # Phân tích mô tả nhiệm vụ để lấy yêu cầu
             requirements = self.extract_mission_requirements(mission_id)
-            print(f"DEBUG: Action: {action_type}, Target: {target}, Description: {mission.description}, Requirements: {requirements}")
             
             # Kiểm tra loại hành động
             mission_desc = mission.description.lower()

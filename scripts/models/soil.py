@@ -32,7 +32,7 @@ class Plant(pygame.sprite.Sprite):
 
 		self.age = 0
 		self.max_age = len(self.frames) - 1
-		self.grow_speed = GROW_SPEED.get(plant_type, 0.05) / 1000
+		self.grow_speed = GROW_SPEED.get(plant_type.replace(' seeds', ''), 0.05) / 1000
 		self.harvestable = False
 
 		self.last_watered = pygame.time.get_ticks()
@@ -70,6 +70,7 @@ class Plant(pygame.sprite.Sprite):
 
 	def grow(self):
 		# First check water status
+		print(self.age)
 		if not self.check_water_status():
 			return
 
@@ -150,7 +151,7 @@ class SoildLayer:
 								True
 							)
 				print(self.grid[y][x])
-						
+
 	def water(self, target_pos):
 		for soil_prite in self.soil_sprites.sprites():
 			if soil_prite.rect.collidepoint(target_pos):

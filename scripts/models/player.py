@@ -70,7 +70,7 @@ class Player(pygame.sprite.Sprite):
 
 		self.hotbar = []
 		for index, item in enumerate(self.inventory.items):
-			if item is not None and index < 3 and item.item_name != 'coins':
+			if item is not None and index < 6 and item.item_name != 'coins':
 				self.hotbar.append(item.item_name)
 
 		if self.hotbar:
@@ -181,10 +181,12 @@ class Player(pygame.sprite.Sprite):
 	def update_hotbar(self):	
 		self.hotbar = []
 		for index, item in enumerate(self.inventory.items):
-			if item is not None and index < 3 and item.item_name != 'coins':
+			if item is not None and index < 6 and item.item_name != 'coins':
 				self.hotbar.append(item.item_name)
 
 		if self.hotbar:
+			if self.hotbar_index >= len(self.hotbar):
+				self.hotbar_index = len(self.hotbar) - 1
 			self.selected_item = self.hotbar[self.hotbar_index]
 		else:
 			self.selected_item = None
@@ -208,7 +210,7 @@ class Player(pygame.sprite.Sprite):
 				self.direction.x = 1
 				self.status = 'right_move'
 			# Tools use
-			if keys[self.keys_bind['action']['use tool']]:
+			if keys[self.keys_bind['action']['use tool']] or pygame.mouse.get_pressed()[0]:
 				self.timers['tool use'].activate()
 				self.direction = pygame.math.Vector2()
 				self.frame_index = 0
@@ -299,7 +301,6 @@ class Player(pygame.sprite.Sprite):
 		# Draw inventory UI only
 		self.inventory_ui.draw()
 		self.update_hotbar()
-		
 
 
 
