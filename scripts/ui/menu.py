@@ -21,6 +21,7 @@ class MainMenu:
 		self.screen = screen
 		self.font = pygame.font.Font(f'{FONT_PATH}/LycheeSoda.ttf', 50)
 
+		set_global_volume(global_volume)
 		self.running = True
 
 		self.bg_images = import_folder(f'{GRAPHICS_PATH}/ui/main_menu_bg/')
@@ -626,7 +627,9 @@ class SettingsMenu:
 		self.keys_bind = {}
 		self.move_keybind_buttons = {}
 		# Load current global volume from settings
-		self.volume = SettingsDB.get_settings()['volume']  
+		self.volume = SettingsDB.get_settings()['volume']
+		self.old_volume = self.volume 
+		
 		self.volume_surfs = import_folder(f'{GRAPHICS_PATH}/ui/settings_menu/volume/levels/')
 		self.muted = False
 		
@@ -641,7 +644,7 @@ class SettingsMenu:
 		start_y_move = self.paddingy + 100
 		# Xác định vị trí cột: cột action giữ bên trái và cột move bên phải
 		self.action_column_x = self.paddingx
-		self.move_column_x = self.paddingx + 250  # Cách nhau 250 pixel (điều chỉnh tùy ý)
+		self.move_column_x = self.paddingx + 250
 		
 		self.keybind_image = pygame.image.load(f'{GRAPHICS_PATH}/ui/settings_menu/key_bind_text.png')
 		self.keybind_surf = pygame.transform.scale(self.keybind_image, (100, 30))
@@ -721,13 +724,18 @@ class SettingsMenu:
 			 # Immediately update the global KEY_BIND so new keys are used by the game
 			global keys_bind
 			keys_bind = self.keybinds
+			set_global_volume(self.volume)
 			print("Settings saved and new keybinds applied.")
 			self.running = False  
 
 		def on_cancel():
 			# Revert keybind changes by discarding the temporary changes
 			self.keybinds = original_keybinds
+			self.volume = self.old_volume
+			set_global_volume(self.old_volume)
 			print("Settings not saved.")
+			
+
 			self.running = False
 
 		popup = ConfirmationPopup(self.display_surface, on_confirm, on_cancel)

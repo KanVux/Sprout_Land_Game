@@ -16,7 +16,6 @@ class Game:
 		self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 		pygame.display.set_caption('Sprout Land')
 		
-		set_global_volume(global_volume)
 		# pygame.mouse.set_visible(False)
 		self.default_cursor_img = pygame.image.load(f"{GRAPHICS_PATH}/mouse/Triangle Mouse icon 1.png").convert_alpha()	
 		self.point_cursor_img = pygame.image.load(f"{GRAPHICS_PATH}/mouse/Catpaw pointing Mouse icon.png").convert_alpha()
@@ -47,6 +46,7 @@ class Game:
 		self.mission_manager = MissionManager(player_id=self.level.player.player_id, player=self.level.player)
 		self.mission_manager.load_player_missions()
 		self.level.player.mission_manager = self.mission_manager
+
 		
 		# Tạo mission_ui
 		self.mission_ui = MissionUI(self.mission_manager)
@@ -105,7 +105,6 @@ class Game:
 			self.update_game_state(dt, mouse_pos, pygame.mouse.get_pressed()[0])
 
 			# Draw cursor and overlay FPS
-
 			self.screen.blit(self.cursor_img, self.cursor_rect)
 			if self.level.all_sprites.debug_mode:
 				fps_overlay.draw(self.screen, self.clock)
