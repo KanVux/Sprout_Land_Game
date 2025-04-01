@@ -627,7 +627,7 @@ class Dialog:
 						
 						# Phát âm thanh gõ mỗi 4 ký tự
 						if self.text_index % 6 == 0:
-							char_sound.set_volume(0.2)
+							char_sound.set_volume(0.2 * global_volume)
 							char_sound.play()
 				else:
 					self.is_text_complete = True
