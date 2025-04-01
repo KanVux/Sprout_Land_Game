@@ -31,8 +31,9 @@ class Overlay:
 		# Tính khoảng cách đều nhau
 		self.total_items = len(self.items)
 		total_padding = self.hotbar_width - (2 * 20) - (self.total_items * self.slot_size)
-		self.slot_padding = total_padding // (self.total_items - 1)
-		
+		if self.total_items > 1:
+			self.slot_padding = total_padding // (self.total_items - 1)
+		self.slot_padding = total_padding
 		# Vị trí thanh công cụ ở giữa dưới màn hình
 		self.hotbar_x = (SCREEN_WIDTH - self.hotbar_width) // 2
 		self.hotbar_y = SCREEN_HEIGHT - self.hotbar_height - 10

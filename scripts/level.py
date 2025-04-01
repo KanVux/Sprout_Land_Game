@@ -315,7 +315,7 @@ class Level:
 			for plant in self.soil_layer.plant_sprites.sprites():
 				if plant.harvestable and plant.rect.colliderect(self.player.hitbox):
 					self.player_add(
-						plant.plant_type,
+						plant.plant_type.replace(' seeds', ''),
 						1
 					)
 					if hasattr(self.player, 'mission_manager') and self.player.mission_manager:

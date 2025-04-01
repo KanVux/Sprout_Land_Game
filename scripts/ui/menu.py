@@ -978,6 +978,12 @@ class CharacterSelectUI:
 		
 		# Kích thước khung xem trước
 		self.preview_size = (120, 120)
+
+		# Thêm biến cho thông báo lỗi
+		self.error_message = ""
+		self.show_error = False
+		self.error_font = pygame.font.Font(f'{FONT_PATH}/Lycheesoda.ttf', 18)
+		self.error_color = (255, 80, 80)  # Màu đỏ cho thông báo lỗi
 		
 	def toggle_creation_mode(self):
 		"""Chuyển đổi giữa chế độ chọn và tạo nhân vật"""
@@ -988,6 +994,12 @@ class CharacterSelectUI:
 	def select_character(self):
 		"""Chọn nhân vật hiện tại và quay lại game chính"""
 		if self.create_new_mode and self.name_input.strip():
+			 # Kiểm tra xem tên đã tồn tại chưa
+			if self.check_name_exists(self.name_input.strip()):
+				self.show_error = True
+				self.error_message = "World name already exists! Choose another."
+				return
+			
 			# Tạo nhân vật mới với tên đã nhập
 			player_id = PlayerDatabase.create_player(self.name_input.strip())
 			self.on_select_callback(player_id)
@@ -995,7 +1007,14 @@ class CharacterSelectUI:
 			# Chọn nhân vật có sẵn
 			player_id = self.characters[self.selected_index]['player_id']
 			self.on_select_callback(player_id)
-		
+	
+	def check_name_exists(self, name):
+		"""Kiểm tra xem tên đã tồn tại trong danh sách nhân vật chưa"""
+		for character in self.characters:
+			if character['player_name'].lower() == name.lower():
+				return True
+		return False
+	
 	def delete_character(self, index):
 		"""Hiển thị hộp xác nhận trước khi xóa nhân vật"""
 		if 0 <= index < len(self.characters):
@@ -1091,12 +1110,16 @@ class CharacterSelectUI:
 				if self.create_new_mode and self.input_active:
 					if event.key == pygame.K_BACKSPACE:
 						self.name_input = self.name_input[:-1]
+						# Xóa thông báo lỗi khi người dùng sửa đổi
+						self.show_error = False
 					elif event.key == pygame.K_RETURN:
 						self.select_character()
 					elif event.key == pygame.K_ESCAPE:
 						self.toggle_creation_mode()  # Quay lại chế độ chọn
 					elif len(self.name_input) < 20:  # Giới hạn độ dài tên
 						self.name_input += event.unicode
+						# Xóa thông báo lỗi khi người dùng sửa đổi
+						self.show_error = False
 				# Trong chế độ chọn
 				elif not self.create_new_mode:
 					if event.key == pygame.K_UP:
@@ -1344,6 +1367,12 @@ class CharacterSelectUI:
 			pygame.draw.line(self.display_surface, (255, 255, 255), 
 						   (cursor_x, input_rect.top + 10), 
 						   (cursor_x, input_rect.bottom - 10), 2)
+		
+		# Vẽ thông báo lỗi nếu có
+		if self.show_error:
+			error_surf = self.error_font.render(self.error_message, True, self.error_color)
+			error_rect = error_surf.get_rect(midtop=(input_rect.centerx, input_rect.bottom + 10))
+			self.display_surface.blit(error_surf, error_rect)
 	
 	def draw_delete_confirmation(self):
 		"""Vẽ hộp xác nhận xóa nhân vật"""

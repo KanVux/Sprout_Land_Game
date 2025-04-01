@@ -219,7 +219,7 @@ class Player(pygame.sprite.Sprite):
 
 			# Seed use
 			if keys[self.keys_bind['action']['use seed']]:
-				if self.selected_item.endswith('seeds'):
+				if self.selected_item is not None and self.selected_item.endswith('seeds'):
 					self.timers['seed use'].activate()
 					self.direction = pygame.math.Vector2()
 					self.frame_index = 0
